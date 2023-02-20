@@ -7,8 +7,6 @@ import os
 path1 = "data/good sections"
 path2 = "data/bad sections"
 
-
-
 def segmentation(image_file):
     img = cv2.imread(image_file)
    
@@ -53,8 +51,6 @@ if not os.path.exists(output_folder_path1):
 if not os.path.exists(output_folder_path2):
     os.makedirs(output_folder_path2)
 
-
-
 # Loop through all the files in the folder
 for filename in os.listdir(path1):
     # Check if the file is an image
@@ -65,7 +61,6 @@ for filename in os.listdir(path1):
         output_img_path = os.path.join(output_folder_path1, "segmented_"+filename)
         cv2.imwrite(output_img_path, result)
 
-
 # Loop through all the files in the folder
 for filename in os.listdir(path2):
     # Check if the file is an image
@@ -75,11 +70,5 @@ for filename in os.listdir(path2):
         result = segmentation(img_path)
         output_img_path = os.path.join(output_folder_path2, "segmented_"+filename)
         cv2.imwrite(output_img_path, result)
-
-
-        
-
-        
-
 
 segmentation("data/bad sections/4.jpg")

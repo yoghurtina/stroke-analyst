@@ -1,35 +1,85 @@
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+import os
 
 # Load the image
-img = cv2.imread("test2.jpeg")
-# img = cv2.imread("13.png")
-# img = cv2.imread("5.png")
+path1 = "data/good sections"
+path2 = "data/bad sections"
 
-# Convert to grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Apply Canny edge detection
-edges = cv2.Canny(gray, 20, 200)
 
-# Apply dilation to thicken the edges
-kernel = np.ones((5,5),np.uint8)
-dilation = cv2.dilate(edges, kernel, iterations=1)
+def segmentation(image_file):
+    img = cv2.imread(image_file)
+   
+    # Convert to grayscale
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Find the contours of the object
-contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # Apply Canny edge detection
+    edges = cv2.Canny(gray, 20, 200)
 
-# Find the largest contour
-largest_contour = max(contours, key=cv2.contourArea)
+    # Apply dilation to thicken the edges
+    kernel = np.ones((5,5),np.uint8)
+    dilation = cv2.dilate(edges, kernel, iterations=1)
 
-# Create a mask of the object
-mask = np.zeros_like(gray)
-cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
+    # Find the contours of the object
+    contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-# Apply the mask to the original image
-result = cv2.bitwise_and(img, img, mask=mask)
+    # Find the largest contour
+    largest_contour = max(contours, key=cv2.contourArea)
 
-# Show the result
-plt.imshow(result[:,:,::-1])
-plt.show()
+    # Create a mask of the object
+    mask = np.zeros_like(gray)
+    cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
+
+    # Apply the mask to the original image
+    result = cv2.bitwise_and(img, img, mask=mask)
+
+    # Show the result
+    # plt.imshow(result[:,:,::-1])
+    # plt.show()
+
+    return result
+
+# Set the path to the folder where you want to save the processed images
+output_folder_path1 = "data/results good"
+output_folder_path2 = "data/results bad"
+
+# Create the output folder if it doesn't exist
+if not os.path.exists(output_folder_path1):
+    os.makedirs(output_folder_path1)
+
+# Create the output folder if it doesn't exist
+if not os.path.exists(output_folder_path2):
+    os.makedirs(output_folder_path2)
+
+
+
+# Loop through all the files in the folder
+for filename in os.listdir(path1):
+    # Check if the file is an image
+    if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+        # Load the image
+        img_path = os.path.join(path1, filename)
+        result = segmentation(img_path)
+        output_img_path = os.path.join(output_folder_path1, "segmented_"+filename)
+        cv2.imwrite(output_img_path, result)
+
+
+# Loop through all the files in the folder
+for filename in os.listdir(path2):
+    # Check if the file is an image
+    if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+        # Load the image
+        img_path = os.path.join(path2, filename)
+        result = segmentation(img_path)
+        output_img_path = os.path.join(output_folder_path2, "segmented_"+filename)
+        cv2.imwrite(output_img_path, result)
+
+
+        
+
+        
+
+
+segmentation("data/bad sections/4.jpg")

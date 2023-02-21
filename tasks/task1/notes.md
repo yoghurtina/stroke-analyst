@@ -59,3 +59,14 @@ These are just a few examples, and there are many other methods for segmenting t
     "A background segmentation method using edge detection and morphological operations for video surveillance systems" by H. Wang et al. (2020)
 
 All of these papers use a combination of edge detection and morphological operations for background segmentation, with some variations in the specific techniques and algorithms used. You may want to review these papers to see which approach would be most suitable for your specific application.
+
+
+Papers:
+
+*M. A. Almomani, T. A. Alhmiedat, S. S. Al-Khassawneh, and M. AlZu'bi, Evaluation of thresholding segmentation techniques for background extraction in complex scenes, IEEE Access, vol. 9, pp. 74069-74080, 2021.
+This paper compares the performance of various thresholding techniques for extracting the background in complex scenes. It includes an experimental evaluation of the techniques and provides a detailed analysis of the results.
+
+*https://iopscience.iop.org/article/10.1088/1742-6596/1237/2/022122/pdf
+
+*https://reader.elsevier.com/reader/sd/pii/S0031320300000236?token=E12C21A094520269CADE8EFBF694A458C28DF7C88940221810EF924BCA2964CA85155C8934A3A4B21DDE201584162097&originRegion=eu-west-1&originCreation=20230221135853 : Canny detector
+

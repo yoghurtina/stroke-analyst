@@ -1,0 +1,51 @@
+Image background segmentation:
+
+The segmentation of image backgrounds is a crucial pre-processing step for many computer vision applications, particularly in the context of training data for machine learning models. 
+A review of the literature reveals numerous methods that have been proposed for background segmentation, including thresholding, edge detection, morphological operations, region-based segmentation, and machine learning approaches [cite].
+While each method has its own strengths and weaknesses, a combination of techniques can often be effective.
+In this work, we investigate the performance of a hybrid method that combines edge detection and morphological operations for background segmentation in our dataset.
+
+Thresholding, one of the simplest methods, involves classifying each pixel in the image as either
+foreground or background based on whether its intensity is above or below a certain threshold [1].
+Edge detection, on the other hand, involves detecting edges in the image using various edge detection algorithms,
+and using them to segment the foreground from the background [2]. Morphological operations, such as erosion and dilation,
+are commonly used for separating the foreground and background in an image with relatively uniform and smooth backgrounds [3].
+Region-based segmentation involves grouping pixels into regions based on some criteria, such as color or texture, and classifying
+them as foreground or background [4]. Finally, machine learning-based segmentation utilizes machine learning models to learn
+how to segment the foreground and background in an image. These models are trained on a large dataset of annotated images and learn
+to extract features from the images to perform the segmentation task [5].
+
+In the initial stage of our investigation, we applied thresholding techniques to distinguish the foreground from the background.
+Regrettably, we encountered difficulties in segmenting the image due to the negligible dissimilarities between the pixels in the image.
+This was mainly attributed to the thickness of the section or the staining methods employed, resulting in the erroneous classification of
+some regions of the foreground as belonging to the background.
+
+The edge detection approach proved to be a promising solution to the challenges encountered with the thresholding method.
+In our study, we employed the Canny Edge Detector [cite], which is a well-known edge detection algorithm available in the opencv module [cite].
+Specifically, we detected the edges in the image and extracted the largest contour, thereby effectively separating the foreground from the background.
+However, we observed that the proposed algorithm's performance was less satisfactory in cases where the images had lower quality or the brain slices
+had stroke lesions. In other words, the changes in pixel intensity may not be significant enough to be detected as edges,
+or the edges may be blurred or obscured by noise or other factors in the image. In addition, edges may not be continuous or smooth,
+which can make it difficult for edge detection algorithms to accurately locate the edges. These factors can make it challenging to detect
+the outer boundaries of objects using edge detection alone, especially in images with complex backgrounds or low contrast between the
+object and background.
+
+We realized that the solution to the problem would be a combination of methods.
+In order to tackle the problem of background segmentation, a combined approach is proposed,
+which leverages the advantages of both edge detection and morphological operations [cite] to achieve more accurate results.
+The proposed approach starts with the application of the Canny edge detection algorithm, which extracts the edges of the object.
+To overcome the limitations of the edge detection method, a morphological operation such as dilation is then applied to the edge
+map to fill any gaps or holes and expand the edges.
+Our experimental results demonstrate that the proposed method achieves
+superior performance in terms of accuracy and robustness compared to the above approaches. 
+
+This approach achieved high accuracy on a number of good sections.
+However, we note that our method struggled to achieve good results in certain cases, where the brain slices were not well cut.
+The method did not perform optimally on these sections, as the images contained significant noise,
+which led to inaccuracies in the background segmentation. We recognize that further investigation is required to improve the method's
+robustness and generalizability to a variety of image conditions.
+
+Figure 1: Results of the proposed method for background segmentation of brain slice images.
+The left column shows the original images, and the right column shows the segmented images using the proposed method.
+Note for the accuracy.
+

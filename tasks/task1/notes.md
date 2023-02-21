@@ -13,7 +13,6 @@ Papers:
 
 *Various image segmentation methods : https://d1wqtxts1xzle7.cloudfront.net/33800705/V3I5201499a84-libre.pdf?1401171820=&response-content-disposition=inline%3B+filename%3DVarious_Image_Segmentation_Techniques_A.pdf&Expires=1676996019&Signature=dpcxYn5v4BNvMjjipviC2HpVQbAFbwfXdb24gNV5tXZGeGtZvgd1YGFJbNIFqGr49Gq3ZF27R95OKJu12pIqRCkMD62DoXX~TQF9e8ZYQCSVUU3cnMk~7SDfGvxW5aUB1p2grNGJD18g3tXL~SCAlEgVRwY8TGbk-Iwak2zW9bKE0J638dw0iNMgugE6pysFUM2zn2uxMhZhkoy8KypGhIYuHp4fFBZRMZDFkcwf7d~viGy5oo2Z4LK3n-ogd3ngioiJjsnhx~F9ko4h3h1oIER78k~osAoqzh2tQBxTOlPZrtJPz16ZBZQuCQaP7cLOEG-9EZtIIN71tBlO~wY4VQ__&Key-Pair-Id=APKAJLOHF5GGSLRBV4ZA [1]
 
-*Deep Learning for Image Segmentation: A Review by Zhang et al. (2018): This review paper discusses recent developments in deep learning techniques for image segmentation, including fully convolutional neural networks (FCNs) and U-Net. [6]
 
 *Dorgham, O., Abu Nasser, M., Hashem Ryalat, M., & Almomani, A. (2018). Proposed Method for Automatic Segmentation of Medical Images. 2018 International Arab Conference on Information Technology (ACIT). doi:10.1109/acit.2018.8672688 [1]
 

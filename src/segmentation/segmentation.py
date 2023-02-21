@@ -30,6 +30,11 @@ def segmentation(image_file):
     mask = np.zeros_like(gray)
     cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
 
+    # Apply erosion to remove noise in outer edges
+    kernel = np.ones((7,7),np.uint8)
+    # mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    mask = cv2.erode(mask, kernel, iterations=1)
+
     # Apply the mask to the original image
     result = cv2.bitwise_and(img, img, mask=mask)
 

@@ -1,19 +1,19 @@
 Image background segmentation:
 
 The segmentation of image backgrounds is a crucial pre-processing step for many computer vision applications, particularly in the context of training data for machine learning models. 
-A review of the literature reveals numerous methods that have been proposed for background segmentation, including thresholding, edge detection, morphological operations, region-based segmentation, and machine learning approaches [cite].
+A review of the literature reveals numerous methods that have been proposed for background segmentation, including thresholding, edge detection, morphological operations, region-based segmentation, and machine and deep learning approaches [1].
 While each method has its own strengths and weaknesses, a combination of techniques can often be effective.
 In this work, we investigate the performance of a hybrid method that combines edge detection and morphological operations for background segmentation in our dataset.
 
 Thresholding, one of the simplest methods, involves classifying each pixel in the image as either
-foreground or background based on whether its intensity is above or below a certain threshold [1].
+foreground or background based on whether its intensity is above or below a certain threshold [2].
 Edge detection, on the other hand, involves detecting edges in the image using various edge detection algorithms,
-and using them to segment the foreground from the background [2]. Morphological operations, such as erosion and dilation,
-are commonly used for separating the foreground and background in an image with relatively uniform and smooth backgrounds [3].
-Region-based segmentation involves grouping pixels into regions based on some criteria, such as color or texture, and classifying
-them as foreground or background [4]. Finally, machine learning-based segmentation utilizes machine learning models to learn
+and using them to segment the foreground from the background [3]. Morphological operations, such as erosion and dilation,
+are commonly used for separating the foreground and background in an image with relatively uniform and smooth backgrounds [4].
+Region-based segmentation [5] involves grouping pixels into regions based on some criteria, such as color or texture, and classifying
+them as foreground or background. Finally, machine and deep learning-based segmentation utilizes models to learn
 how to segment the foreground and background in an image. These models are trained on a large dataset of annotated images and learn
-to extract features from the images to perform the segmentation task [5].
+to extract features from the images to perform the segmentation task [6].
 
 In the initial stage of our investigation, we applied thresholding techniques to distinguish the foreground from the background.
 Regrettably, we encountered difficulties in segmenting the image due to the negligible dissimilarities between the pixels in the image.
@@ -21,7 +21,7 @@ This was mainly attributed to the thickness of the section or the staining metho
 some regions of the foreground as belonging to the background.
 
 The edge detection approach proved to be a promising solution to the challenges encountered with the thresholding method.
-In our study, we employed the Canny Edge Detector [cite], which is a well-known edge detection algorithm available in the opencv module [cite].
+In our study, we employed the Canny Edge Detector [7], which is a well-known edge detection algorithm available in the opencv module [8].
 Specifically, we detected the edges in the image and extracted the largest contour, thereby effectively separating the foreground from the background.
 However, we observed that the proposed algorithm's performance was less satisfactory in cases where the images had lower quality or the brain slices
 had stroke lesions. In other words, the changes in pixel intensity may not be significant enough to be detected as edges,

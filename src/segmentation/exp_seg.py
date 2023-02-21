@@ -1,57 +1,60 @@
-import cv2
-import matplotlib.pyplot as plt
-import numpy as np
+# import cv2
+# from matplotlib import pyplot as plt
 
-# Load the image
-img = cv2.imread("7.png")
+# # Load the image
+# img = cv2.imread('data/good sections/test.jpeg')
 
-# Convert to grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# # Convert the image to grayscale
+# gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-# Apply Otsu's thresholding
-_, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY+cv2.THRESH_OTSU)
+# # Apply thresholding
+# _, thresh = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY)
 
-# Invert the thresholded image
-thresh = cv2.bitwise_not(thresh)
+# # Plot the original and thresholded images
+# plt.subplot(1, 2, 1)
+# plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+# plt.title('Original Image')
+# plt.xticks([])
+# plt.yticks([])
 
-# Find the contours of the object
-contours, _ = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+# plt.subplot(1, 2, 2)
+# plt.imshow(thresh, cmap='gray')
+# plt.title('Thresholded Image')
+# plt.xticks([])
+# plt.yticks([])
 
-# Draw the largest contour
-largest_contour = max(contours, key=cv2.contourArea)
-mask = np.zeros_like(img)
-cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
+# plt.show()
 
-# Apply the mask to the original image
-result = cv2.bitwise_and(img, mask)
-
-# Show the result
-plt.imshow(result[:,:,::-1])
-plt.show()
+# img = io.imread('data/bad sections/1.png')
 
 
-import cv2
 import numpy as np
 import matplotlib.pyplot as plt
+from skimage import io, color, filters, morphology
+from skimage import io
+# Load image
+img = io.imread('data/bad sections/1.png')
 
-# load the image
-img = cv2.imread("1.png")
+# Convert image to grayscale
+gray = color.rgb2gray(img)
 
-# convert the image to grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+# Apply median filter to remove noise
+median = filters.median(gray)
 
-# apply Gaussian blur to reduce noise
-blur = cv2.GaussianBlur(gray, (5, 5), 0)
+# Thresholding to create a binary image
+binary = median < 0.5
 
-# apply Canny edge detection
-edges = cv2.Canny(blur, 50, 200)
+# Morphological opening to remove small objects and smooth edges
+opened = morphology.opening(binary, selem=morphology.disk(5))
 
-# find contours
-contours, hierarchy = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+# Use binary image as a mask to extract background pixels
+background = np.zeros_like(img)
+background[opened] = img[opened]
 
-# draw the contours on the original image
-cv2.drawContours(img, contours, -1, (0, 255, 0), 3)
+# Show the original image and the background
+fig, ax = plt.subplots(1, 2, figsize=(10, 5), sharex=True, sharey=True)
 
-# plot the result
-plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+ax[0].imshow(img)
+ax[1].imshow(background)
+
 plt.show()

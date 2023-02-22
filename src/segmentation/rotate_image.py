@@ -6,33 +6,31 @@ import numpy as np
 from sklearn.decomposition import PCA
 
 
-def rotate_image(image):
+def align_image(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Reshape the image into a 1D array
-    X = gray.reshape(-1, 1)
+    # Apply Canny edge detection to find edges in the image
+    edges = cv2.Canny(gray, 50, 150, apertureSize=3)
 
-    # Check if the image is flat
-    if X.shape[0] == 1 or X.shape[1] == 1:
+    # Find the lines in the image using the HoughLinesP function
+    lines = cv2.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
+
+    # Check if lines were found
+    if lines is not None and len(lines) > 0:
+        # Calculate the angle of the first line found
+        angle = np.arctan2((lines[0][0][3]-lines[0][0][1]),(lines[0][0][2]-lines[0][0][0])) * 180/np.pi
+
+        # Rotate the image by the calculated angle
+        rows,cols = image.shape[:2]
+        M = cv2.getRotationMatrix2D((cols/2,rows/2),angle,1)
+        rotated_image = cv2.warpAffine(image,M,(cols,rows))
+
+        return rotated_image
+    else:
+        # If no lines were found, return the original image
         return image
 
-    # Apply PCA to find the main axis of the pixel distribution
-    pca = PCA(n_components=2)
-    pca.fit(X)
-    main_axis = pca.components_[0]
-
-    # Calculate the angle between the main axis and the x-axis
-    angle = np.arctan2(main_axis[1], main_axis[0]) * 180 / np.pi
-
-    # Rotate the image to align with the x-axis
-    center = tuple(np.array(gray.shape) // 2)
-    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    aligned_image = cv2.warpAffine(image, rotation_matrix, gray.shape, flags=cv2.INTER_LINEAR)
-
-    return aligned_image
-
-        
 
 path1 = "data/results good"
 
@@ -51,6 +49,7 @@ for filename in os.listdir(path1):
         # Load the image
         img_path = os.path.join(path1, filename)
         result = seg.segmentation(img_path)
-        rotate_image(result)
+        rotated = align_image(result)
+        # print(angle)
         output_img_path = os.path.join(output_folder, "rotated_"+filename)
-        cv2.imwrite(output_img_path, result)
+        cv2.imwrite(output_img_path, rotated)

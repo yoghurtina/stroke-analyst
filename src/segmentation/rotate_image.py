@@ -5,7 +5,6 @@ import image_segmentation as seg
 import numpy as np
 from sklearn.decomposition import PCA
 
-
 def align_image(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -15,6 +14,8 @@ def align_image(image):
 
     # Use PCA to find the main axis of the pixel distribution
     X = np.column_stack([x_coords, y_coords])
+    
+    # Apply PCA to find the main axis of the pixel distribution
     pca = PCA(n_components=2)
     pca.fit(X)
     main_axis = pca.components_[0]
@@ -22,15 +23,30 @@ def align_image(image):
     # Calculate the angle between the main axis and the x-axis
     angle = np.arctan2(main_axis[1], main_axis[0]) * 180 / np.pi
 
-    # Calculate the center of rotation
-    center = ((image.shape[1]-1)/2, (image.shape[0]-1)/2)
-
     # Rotate the image to align with the x-axis
+    center = ((image.shape[1]-1)/2, (image.shape[0]-1)/2)
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    aligned_image = cv2.warpAffine(image, rotation_matrix, (image.shape[1], image.shape[0]), flags=cv2.INTER_LINEAR)
+    aligned_image = cv2.warpAffine(image, rotation_matrix,  (image.shape[1], image.shape[0]), flags=cv2.INTER_LINEAR)
+
+    # Check if the image is reversed
+    if np.sum(aligned_image[0, :, :] - aligned_image[-1, :, :]) > 0:
+        aligned_image = cv2.rotate(aligned_image, cv2.ROTATE_180)
+
+    # Check if the image is upside down
+    if np.sum(aligned_image[:, 0, :] - aligned_image[:, -1, :]) < 0:
+        aligned_image = cv2.rotate(aligned_image, cv2.ROTATE_180)
+
+    # Check if the image is flipped horizontally
+    if np.mean(aligned_image[0, :, :]) < np.mean(aligned_image[-1, :, :]):
+        aligned_image = cv2.flip(aligned_image, 0)
+
+    # Check if the image is flipped vertically
+    if np.mean(aligned_image[:, 0, :]) < np.mean(aligned_image[:, -1, :]):
+        aligned_image = cv2.flip(aligned_image, 1)
 
     return aligned_image
-   
+
+
 path1 = "data/results good"
 
 # Set the path to the folder where you want to save the processed images

@@ -10,28 +10,27 @@ def align_image(image):
     # Convert the image to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    # Apply Canny edge detection to find edges in the image
-    edges = cv2.Canny(gray, 50, 150, apertureSize=3)
+    # Get the coordinates of the non-zero pixels
+    y_coords, x_coords = np.nonzero(gray)
 
-    # Find the lines in the image using the HoughLinesP function
-    lines = cv2.HoughLinesP(edges, rho=1, theta=np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
+    # Use PCA to find the main axis of the pixel distribution
+    X = np.column_stack([x_coords, y_coords])
+    pca = PCA(n_components=2)
+    pca.fit(X)
+    main_axis = pca.components_[0]
 
-    # Check if lines were found
-    if lines is not None and len(lines) > 0:
-        # Calculate the angle of the first line found
-        angle = np.arctan2((lines[0][0][3]-lines[0][0][1]),(lines[0][0][2]-lines[0][0][0])) * 180/np.pi
+    # Calculate the angle between the main axis and the x-axis
+    angle = np.arctan2(main_axis[1], main_axis[0]) * 180 / np.pi
 
-        # Rotate the image by the calculated angle
-        rows,cols = image.shape[:2]
-        M = cv2.getRotationMatrix2D((cols/2,rows/2),angle,1)
-        rotated_image = cv2.warpAffine(image,M,(cols,rows))
+    # Calculate the center of rotation
+    center = ((image.shape[1]-1)/2, (image.shape[0]-1)/2)
 
-        return rotated_image
-    else:
-        # If no lines were found, return the original image
-        return image
+    # Rotate the image to align with the x-axis
+    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    aligned_image = cv2.warpAffine(image, rotation_matrix, (image.shape[1], image.shape[0]), flags=cv2.INTER_LINEAR)
 
-
+    return aligned_image
+   
 path1 = "data/results good"
 
 # Set the path to the folder where you want to save the processed images

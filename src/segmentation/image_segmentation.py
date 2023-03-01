@@ -42,7 +42,7 @@ def segmentation(image_file):
     # plt.imshow(result[:,:,::-1])
     # plt.show()
 
-    return result
+    return result, mask
 
 # Set the path to the folder where you want to save the processed images
 output_folder_path1 = "data/results good"
@@ -62,7 +62,7 @@ for filename in os.listdir(path1):
     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
         # Load the image
         img_path = os.path.join(path1, filename)
-        result = segmentation(img_path)
+        result, mask = segmentation(img_path)
         output_img_path = os.path.join(output_folder_path1, "segmented_"+filename)
         cv2.imwrite(output_img_path, result)
 
@@ -72,7 +72,7 @@ for filename in os.listdir(path2):
     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
         # Load the image
         img_path = os.path.join(path2, filename)
-        result = segmentation(img_path)
+        result, mask = segmentation(img_path)
         output_img_path = os.path.join(output_folder_path2, "segmented_"+filename)
         cv2.imwrite(output_img_path, result)
 

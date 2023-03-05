@@ -1,14 +1,33 @@
 import cv2
 import numpy as np
 import streamlit as st
-import image_segmentation as seg
+from streamlit_image_comparison import image_comparison
+from module.segmentation import segmentation
+from module.alignment import alignment, is_aligned
 
-def main():                         
-    st.title("Image Segmentation App")
+st.title("Image Segmentation")
 
-    # Upload file
-    uploaded_file = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"])
+def main():
+    uploaded_files = st.file_uploader("Choose an image...", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
+    
+    for file in uploaded_files:
+        if file:
+            image = st.image(file)
+            if st.button('Segmentate image', key="1"):
+            # for file in uploaded_files:
+                seg, mask = segmentation(file)
+                # frame = np.array(image)
+                segmentated = st.image(seg)
+                
+            # download_button = st.download_button(
+            #                     label="Download segmentated image",
+            #                     data=seg,
+            #                     file_name="test",
+            #                     mime="image/png"
+            #                 )
+              
+              
 
-
+    
 if __name__ == "__main__":
     main()

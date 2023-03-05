@@ -91,11 +91,10 @@ def align_image(image):
 
     return rotated
 
-
-path1 = "data/results good"
+path1 = "results/results good"
 
 # Set the path to the folder where you want to save the processed images
-output_folder = "data/rotated images"
+output_folder = "results/rotated images"
 
 
 # Create the output folder if it doesn't exist

@@ -75,5 +75,3 @@ for filename in os.listdir(path2):
         result, mask = segmentation(img_path)
         output_img_path = os.path.join(output_folder_path2, "segmented_"+filename)
         cv2.imwrite(output_img_path, result)
-
-segmentation("data/bad sections/4.jpg")

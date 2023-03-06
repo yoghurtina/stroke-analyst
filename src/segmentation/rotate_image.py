@@ -6,11 +6,6 @@ import numpy as np
 from sklearn.decomposition import PCA
 import math
 
-import cv2
-import numpy as np
-# from skimage import segmentation as seg
-
-
 def is_aligned(image, threshold=5):
     # Compute orientation using Hough Transform
     lines = cv2.HoughLinesP(image, rho=1, theta=np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
@@ -91,10 +86,11 @@ def align_image(image):
 
     return rotated
 
-path1 = "results/results good"
+
+path1 = "data/results good"
 
 # Set the path to the folder where you want to save the processed images
-output_folder = "results/rotated images"
+output_folder = "data/rotated images"
 
 
 # Create the output folder if it doesn't exist

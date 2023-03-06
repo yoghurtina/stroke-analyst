@@ -12,12 +12,12 @@ def main():
     
     for file in uploaded_files:
         if file:
-            image = st.image(file)
+            image = st.image(file,width=300)
             if st.button('Segmentate image', key="1"):
             # for file in uploaded_files:
                 seg, mask = segmentation(file)
                 # frame = np.array(image)
-                segmentated = st.image(seg)
+                segmentated = st.image(seg,width=300)
                 
             # download_button = st.download_button(
             #                     label="Download segmentated image",

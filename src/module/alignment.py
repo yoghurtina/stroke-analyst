@@ -71,15 +71,18 @@ def alignment(image):
     (rows, cols) = result.shape[:2]
     center = (cols // 2, rows // 2)
     M = cv2.getRotationMatrix2D(center, theta, 1.0)
-    rotated = cv2.warpAffine(result, M, (cols, rows), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
 
-    # # Step 8: Draw eigenvectors
-    # if eigenvectors.shape[1] >= 2:
-    #     x, y = np.dot(eigenvector_matrix.T, np.diag([100, 50]))
-    #     x = int(x[0])
-    #     y = int(y[0])
-    #     cv2.line(rotated, center, (center[0] + x, center[1] + y), (0, 255, 0), thickness=2)
-    #     cv2.line(rotated, center, (center[0] - y, center[1] + x), (0, 0, 255), thickness=2)
+    # Compute the new size of the rotated image
+    cos = np.abs(M[0, 0])
+    sin = np.abs(M[0, 1])
+    new_cols = int(rows * sin + cols * cos)
+    new_rows = int(rows * cos + cols * sin)
+
+    # Adjust the translation component of the transformation matrix to center the image
+    M[0, 2] += (new_cols - cols) / 2
+    M[1, 2] += (new_rows - rows) / 2
+
+    rotated = cv2.warpAffine(result, M, (new_cols, new_rows), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
 
     return rotated
-
+                             

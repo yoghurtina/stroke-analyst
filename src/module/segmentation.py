@@ -30,12 +30,12 @@ def segmentation(image_file):
 
     # Apply erosion to remove noise in outer edges
     kernel = np.ones((7,7),np.uint8)
-    # mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+    # mask = cv2.morphologyEx(mask, cv2.MORPH_ERODE, kernel)
     mask = cv2.erode(mask, kernel, iterations=1)
 
     # Apply the mask to the original image
     result = cv2.bitwise_and(img, img, mask=mask)
-    # result = cv2.cvtColor(result,cv2.COLOR_RGB2BGR) local correction
+    # result = cv2.cvtColor(result,cv2.COLOR_RGB2BGR) 
 
     return result, mask
 

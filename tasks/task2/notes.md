@@ -35,3 +35,4 @@ Eigenvalue-based alignment involves computing the covariance matrix of the image
 PCA, on the other hand, is a technique for dimensionality reduction that involves finding the principal components of the data. While PCA can be used for image alignment by computing the covariance matrix of the image features, the technique is not specifically designed for alignment and may not always produce accurate results.
 
 So while there is some overlap between eigenvalue-based alignment and PCA, they are not exactly the same technique.
+

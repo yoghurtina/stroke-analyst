@@ -1,34 +1,54 @@
-import cv2
+
 import numpy as np
 import matplotlib.pyplot as plt
+import cv2
 
-# Load the image
-# img = cv2.imread("CA1R/7.jpg")
-img = cv2.imread("diff.JPG")
+from PIL import Image
+import numpy as np
 
-# Convert to grayscale
-gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+def open_image(path):
+    image = Image.open(path)
+    image = np.asarray(image)
+    return image
 
-# Apply Canny edge detection
-edges = cv2.Canny(gray, 20, 200)
+####CLUSTERING###
+import matplotlib.pyplot as plt
+import cv2
 
-# Apply dilation to thicken the edges
-kernel = np.ones((5,5),np.uint8)
-dilation = cv2.dilate(edges, kernel, iterations=1)
+# image = open_image(path)
 
-# Find the contours of the object
-contours, hierarchy = cv2.findContours(dilation, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+def clustering_image(img):
+    img = open_image(img)
 
-# Find the largest contour
-largest_contour = max(contours, key=cv2.contourArea)
+    img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+    # reshape the img to a 2D array of pixels and 3 color values (RGB)
+    pixel_values = img.reshape((-1, 3))
+    # convert to float
+    pixel_values = np.float32(pixel_values)
+    # print(pixel_values.shape)
 
-# Create a mask of the object
-mask = np.zeros_like(gray)
-cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
+    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 200, 0.6)
+    # number of clusters (K)
+    k = 2
+    _, labels, (centers) = cv2.kmeans(pixel_values, k, None, criteria, 10, cv2.KMEANS_PP_CENTERS)
 
-# Apply the mask to the original image
-result = cv2.bitwise_and(img, img, mask=mask)
+        # convert back to 8 bit values
+    centers = np.uint8(centers)
 
-# Show the result
-plt.imshow(result[:,:,::-1])
-plt.show()
+    # flatten the labels array
+    labels = labels.flatten()
+
+    # convert all pixels to the color of the centroids
+    segmented_img = centers[labels.flatten()]
+
+    # reshape back to the original img dimension
+    segmented_img = segmented_img.reshape(img.shape)
+    # show the img
+    plt.imshow(segmented_img)
+    plt.show()
+
+    return segmented_img
+
+img = "segmented_6.png"
+# img = "code/test.jpg"
+clust = clustering_image(img)

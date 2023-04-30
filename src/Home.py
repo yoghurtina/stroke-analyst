@@ -22,11 +22,4 @@ __Under Construction__
 4. Section Registration to Atlas (Registration page)
 """
 
-page1_data = st.file_uploader("Upload Image", type=["jpg", "jpeg", "png"])
-if page1_data:
-    session_state.page1_image = page1_data.read()
 
-# Page 2: Access image from session state
-page2_image = session_state.page1_image
-if page2_image:
-    st.image(page2_image, caption="Image from Page 1")

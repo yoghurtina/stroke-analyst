@@ -5,6 +5,7 @@ import nibabel as nib
 import cv2
 import os
 
+# path = "/home/ioanna/Documents/Thesis/src/segmentation/seg_results"
 def convert_to_grayscale(input_path):
     with Image.open(input_path) as img:
         img = img.convert('L')
@@ -47,22 +48,22 @@ def enhance_contrast(image_matrix, bins=256):
 
     return image_eq
 
-def equalize_this(image_file, with_plot=False, gray_scale=True, bins=256):
+def equalize_this(image_file, with_plot=False, gray_scale=False, bins=256):
     image_src = read_this(image_file=image_file, gray_scale=gray_scale)
-    if not gray_scale:
-        r_image = image_src[:, :, 0]
-        g_image = image_src[:, :, 1]
-        b_image = image_src[:, :, 2]
+    # if not gray_scale:
+    #     r_image = image_src[:, :, 0]
+    #     g_image = image_src[:, :, 1]
+    #     b_image = image_src[:, :, 2]
 
-        r_image_eq = enhance_contrast(image_matrix=r_image)
-        g_image_eq = enhance_contrast(image_matrix=g_image)
-        b_image_eq = enhance_contrast(image_matrix=b_image)
+    #     r_image_eq = enhance_contrast(image_matrix=r_image)
+    #     g_image_eq = enhance_contrast(image_matrix=g_image)
+    #     b_image_eq = enhance_contrast(image_matrix=b_image)
 
-        image_eq = np.dstack(tup=(r_image_eq, g_image_eq, b_image_eq))
-        cmap_val = None
-    else:
-        image_eq = enhance_contrast(image_matrix=image_src)
-        cmap_val = 'gray'
+    #     image_eq = np.dstack(tup=(r_image_eq, g_image_eq, b_image_eq))
+    #     cmap_val = None
+    # else:
+    image_eq = enhance_contrast(image_matrix=image_src)
+    cmap_val = 'gray'
 
     if with_plot:
         fig = plt.figure(figsize=(10, 20))
@@ -80,21 +81,3 @@ def equalize_this(image_file, with_plot=False, gray_scale=True, bins=256):
         return True
     return image_eq
 
-# img = equalize_this(image_file='test2.jpg', with_plot=True)
-path = "/home/ioanna/Documents/Thesis/results/preprocessing/alignment/an"
-
-
-output_folder_path = "/home/ioanna/Documents/Thesis/results/preprocessing/normalization/an"
-
-if not os.path.exists(output_folder_path):
-    os.makedirs(output_folder_path)
-
-
-for filename in os.listdir(path):
-    # Check if the file is an image
-    if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-        # Load the image
-        img_path = os.path.join(path, filename)
-        result = equalize_this(img_path, with_plot=False, gray_scale=True)
-        output_img_path = os.path.join(output_folder_path, filename)
-        cv2.imwrite(output_img_path, result)

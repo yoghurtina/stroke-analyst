@@ -89,40 +89,24 @@ def alignment(image):
 
     return rotated
 
-path1 = "/home/ioanna/Documents/Thesis/results/preprocessing/segmentation/an"
-# path2 = "/home/ioanna/Documents/Thesis/results/preprocessing/segmentation/2"
+# Load the image
+path1 = "/home/ioanna/Documents/Thesis/training/input"
 
 # Set the path to the folder where you want to save the processed images
-output_folder = "/home/ioanna/Documents/Thesis/results/preprocessing/alignment/an"
-# output_folder2 = "/home/ioanna/Documents/Thesis/results/preprocessing/alignment"
-
+output_folder_path1 = "/home/ioanna/Documents/Thesis/training/aligned"
 
 # Create the output folder if it doesn't exist
-if not os.path.exists(output_folder):
-    os.makedirs(output_folder)
+if not os.path.exists(output_folder_path1):
+    os.makedirs(output_folder_path1)
 
-# if not os.path.exists(output_folder2):
-#     os.makedirs(output_folder)
-
-#  Loop through all the files in the folder
+# Loop through all the files in the folder
 for filename in os.listdir(path1):
+    print(filename)
     # Check if the file is an image
     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+        print("his")
         # Load the image
         img_path = os.path.join(path1, filename)
-        # result, mask = seg.segmentation(img_path)
-        rotated = alignment(img_path)
-        # print(angle)
-        output_img_path = os.path.join(output_folder, "rotated_"+filename)
-        cv2.imwrite(output_img_path, rotated)
-
-# for filename in os.listdir(path2):
-#     # Check if the file is an image
-#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-#         # Load the image
-#         img_path = os.path.join(path2, filename)
-#         # result, mask = seg.segmentation(img_path)
-#         rotated = alignment(img_path)
-#         # print(angle)
-#         output_img_path = os.path.join(output_folder, "rotated_"+filename)
-#         cv2.imwrite(output_img_path, rotated)
+        result, mask = segmentation(img_path)
+        output_img_path = os.path.join(output_folder_path1, "sa"+filename)
+        cv2.imwrite(output_img_path, result)

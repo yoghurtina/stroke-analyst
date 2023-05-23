@@ -29,7 +29,7 @@ def segmentation(image_file):
     cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
 
     # Apply erosion to remove noise in outer edges
-    kernel = np.ones((7,7),np.uint8)
+    kernel = np.ones((5,5),np.uint8)
     # mask = cv2.morphologyEx(mask, cv2.MORPH_ERODE, kernel)
     mask = cv2.erode(mask, kernel, iterations=1)
 
@@ -38,41 +38,3 @@ def segmentation(image_file):
     # result = cv2.cvtColor(result,cv2.COLOR_RGB2BGR) 
 
     return result, mask
-
-
-# TESTING
-# # Load the image
-# path1 = "data/good sections"
-# path2 = "data/bad sections"
-
-# # Set the path to the folder where you want to save the processed images
-# output_folder_path1 = "results/results good"
-# output_folder_path2 = "results/results bad"
-
-# # Create the output folder if it doesn't exist
-# if not os.path.exists(output_folder_path1):
-#     os.makedirs(output_folder_path1)
-
-# # Create the output folder if it doesn't exist
-# if not os.path.exists(output_folder_path2):
-#     os.makedirs(output_folder_path2)
-
-# # Loop through all the files in the folder
-# for filename in os.listdir(path1):
-#     # Check if the file is an image
-#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-#         # Load the image
-#         img_path = os.path.join(path1, filename)
-#         result, mask = segmentation(img_path)
-#         output_img_path = os.path.join(output_folder_path1, "segmented_"+filename)
-#         cv2.imwrite(output_img_path, result)
-
-# # Loop through all the files in the folder
-# for filename in os.listdir(path2):
-#     # Check if the file is an image
-#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-#         # Load the image
-#         img_path = os.path.join(path2, filename)
-#         result, mask = segmentation(img_path)
-#         output_img_path = os.path.join(output_folder_path2, "segmented_"+filename)
-#         cv2.imwrite(output_img_path, result)

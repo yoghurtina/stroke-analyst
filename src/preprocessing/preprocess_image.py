@@ -7,14 +7,14 @@ import cv2
 # Read in the fixed image
 # fixed_image_path = 'newimage.nii'
 # fixed_image_path = 'newfixed.nii'
-fixed_image_path = 'fixed_bn2_68.nii'
+fixed_image_path = 'fixed3.nii'
 fixed_image_1 = sitk.ReadImage(fixed_image_path)
 fixed_image  = sitk.GetArrayFromImage(fixed_image_1)
 
 # Read in the moving image
 # moving_image_path = 'moving.nii'
 # moving_image_path = 'newmoving.nii'
-moving_image_path = 'moving_bn2_68.nii'
+moving_image_path = 'moving3.nii'
 moving_image_1 = sitk.ReadImage(moving_image_path)
 moving_image = sitk.GetArrayFromImage(moving_image_1)
 
@@ -31,7 +31,7 @@ plt.title('Fixed Image')
 
 plt.show()
 
-def dpi_fixing(image, dpi = [600, 600]):
+def dpi_fixing(image, dpi = [300, 300]):
        
     # Get the current spacing and size of the image
     spacing = image.GetSpacing()

@@ -37,8 +37,8 @@ def enhance_contrast(image_matrix, bins=256):
     norm = (cum_sum - cum_sum.min()) * 255
     # normalization of the pixel values
     n_ = cum_sum.max() - cum_sum.min()
-    uniform_norm = norm / n_
-    uniform_norm = uniform_norm.astype('int')
+    uniform_norm = norm / n_ 
+    uniform_norm = uniform_norm.astype('float')
 
     # flat histogram
     image_eq = uniform_norm[image_flattened]
@@ -81,20 +81,51 @@ def equalize_this(image_file, with_plot=False, gray_scale=True, bins=256):
     return image_eq
 
 # img = equalize_this(image_file='test2.jpg', with_plot=True)
-path = "/home/ioanna/Documents/Thesis/results/preprocessing/alignment/an"
+# path = "/home/ioanna/Documents/Thesis/training/segmented"
+# path1 = "/home/ioanna/Documents/Thesis/training/stroke_extracted"
+# path2 = "/home/ioanna/Documents/Thesis/raw_data/coordinated_to_allen"
 
 
-output_folder_path = "/home/ioanna/Documents/Thesis/results/preprocessing/normalization/an"
+# output_folder_path = "/home/ioanna/Documents/Thesis/training/normalized"
+# output_folder_path1 = "/home/ioanna/Documents/Thesis/training/stroke_extracted_normalized"
+# output_folder_path2 = "/home/ioanna/Documents/Thesis/results/preprocessing/normalization"
 
-if not os.path.exists(output_folder_path):
-    os.makedirs(output_folder_path)
+# if not os.path.exists(output_folder_path):
+#     os.makedirs(output_folder_path)
 
+# if not os.path.exists(output_folder_path1):
+#     os.makedirs(output_folder_path1)
 
-for filename in os.listdir(path):
-    # Check if the file is an image
-    if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-        # Load the image
-        img_path = os.path.join(path, filename)
-        result = equalize_this(img_path, with_plot=False, gray_scale=True)
-        output_img_path = os.path.join(output_folder_path, filename)
-        cv2.imwrite(output_img_path, result)
+# if not os.path.exists(output_folder_path2):
+#     os.makedirs(output_folder_path2)
+
+# for filename in os.listdir(path):
+#     # Check if the file is an image
+#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+#         # Load the image
+#         img_path = os.path.join(path, filename)
+#         result = equalize_this(img_path, with_plot=False, gray_scale=True)
+#         output_img_path = os.path.join(output_folder_path, filename)
+#         cv2.imwrite(output_img_path, result)
+
+# for filename in os.listdir(path1):
+#     # Check if the file is an image
+#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+#         # Load the image
+#         img_path = os.path.join(path1, filename)
+#         result = equalize_this(img_path, with_plot=False, gray_scale=True)
+#         output_img_path = os.path.join(output_folder_path1, filename)
+#         cv2.imwrite(output_img_path, result)
+
+# for filename in os.listdir(path2):
+#     # Check if the file is an image
+#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+#         # Load the image
+#         print(filename)
+#         img_path = os.path.join(path2, filename)
+#         result = equalize_this(img_path, with_plot=False, gray_scale=True)
+#         output_img_path = os.path.join(output_folder_path2, filename)
+#         cv2.imwrite(output_img_path, result)
+
+re = equalize_this("fixed3.jpg")
+cv2.imwrite("fixed3.jpg", re)

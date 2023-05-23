@@ -3,7 +3,7 @@ import SimpleElastix as sitk
 import SimpleITK as sitk
 import matplotlib.pyplot as plt 
 
-fixed_image_path = 'norm_fixed.nii'
+fixed_image_path = 'data/fixed.nii'
 # fixed_image_path = 'newimage.nii'
 # fixed_image_path = 'fixed_bn2_68.nii'
 # fixed_image_path = 'newfixed.nii'
@@ -11,7 +11,7 @@ fixed_image_path = 'norm_fixed.nii'
 
 
 
-moving_image_path = 'norm_moving.nii'
+moving_image_path = 'data/moving.nii'
 # moving_image_path = 'moving.nii'
 # moving_image_path = 'moving_bn2_68.nii'
 # moving_image_path = 'newmoving.nii'
@@ -86,7 +86,7 @@ print(result)
 # registered_image = result.GetResultImage()
 
 
-sitk.WriteImage(result, "/home/ioanna/Documents/Thesis/src/registration/results/elastix/4.nii")
+sitk.WriteImage(result, "/home/ioanna/Documents/Thesis/src/registration/reg_results/4.nii")
 
 
     
@@ -149,10 +149,96 @@ demons_filter.SetStandardDeviations(2.0)
 # Add our simple callback to the registration filter.
 demons_filter.AddCommand(sitk.sitkIterationEvent, lambda: iteration_callback(demons_filter))
 
+
+
 # Run the registration.
 tx = multiscale_demons(registration_algorithm=demons_filter, 
                        fixed_image = fixed_image, 
                        moving_image = moving_image,
                        shrink_factors = [4,2],
                        smoothing_sigmas = [8,4])
+
+print(tx)
+# registered_image = result.GetResultImage()
+
+
+# sitk.WriteImage(tx, "/home/ioanna/Documents/Thesis/src/registration/reg_results/4.nii")
+
+
+
+def bspline_intra_modal_registration(
+    fixed_image,
+    moving_image,
+    fixed_image_mask=None,
+    fixed_points=None,
+    moving_points=None,
+):
+    registration_method = sitk.ImageRegistrationMethod()
+
+    # Determine the number of BSpline control points using the physical spacing we want for the control grid.
+    grid_physical_spacing = [4.0, 4.0, 4.0]  # A control point every 50mm
+    image_physical_size = [
+        size * spacing
+        for size, spacing in zip(fixed_image.GetSize(), fixed_image.GetSpacing())
+    ]
+    mesh_size = [
+        int(image_size / grid_spacing + 0.5)
+        for image_size, grid_spacing in zip(image_physical_size, grid_physical_spacing)
+    ]
+
+    initial_transform = sitk.BSplineTransformInitializer(
+        image1=fixed_image, transformDomainMeshSize=mesh_size, order=3
+    )
+    registration_method.SetInitialTransform(initial_transform)
+
+    registration_method.SetMetricAsMeanSquares()
+    # Settings for metric sampling, usage of a mask is optional. When given a mask the sample points will be
+    # generated inside that region. Also, this implicitly speeds things up as the mask is smaller than the
+    # whole image.
+    registration_method.SetMetricSamplingStrategy(registration_method.RANDOM)
+    registration_method.SetMetricSamplingPercentage(0.01)
+    if fixed_image_mask:
+        registration_method.SetMetricFixedMask(fixed_image_mask)
+
+    # Multi-resolution framework.
+    registration_method.SetShrinkFactorsPerLevel(shrinkFactors=[4, 2, 1])
+    registration_method.SetSmoothingSigmasPerLevel(smoothingSigmas=[2, 1, 0])
+    registration_method.SmoothingSigmasAreSpecifiedInPhysicalUnitsOn()
+
+    registration_method.SetInterpolator(sitk.sitkLinear)
+    registration_method.SetOptimizerAsLBFGSB(
+        gradientConvergenceTolerance=1e-5, numberOfIterations=100
+    )
+
+    # If corresponding points in the fixed and moving image are given then we display the similarity metric
+    # and the TRE during the registration.
+    # if fixed_points and moving_points:
+    #     registration_method.AddCommand(
+    #         sitk.sitkStartEvent, rc.metric_and_reference_start_plot
+    #     )
+    #     registration_method.AddCommand(
+    #         sitk.sitkEndEvent, rc.metric_and_reference_end_plot
+    #     )
+    #     registration_method.AddCommand(
+    #         sitk.sitkIterationEvent,
+    #         lambda: rc.metric_and_reference_plot_values(
+    #             registration_method, fixed_points, moving_points
+    #         ),
+    #     )
+    registration_method.Execute(fixed_image, moving_image)
+    registered_image = sitk.Resample(moving_image, fixed_image, initial_transform, sitk.sitkLinear, 0.0)
+
+    return registered_image
+
+
+tx = bspline_intra_modal_registration(
+    fixed_image=fixed_image,
+    moving_image=moving_image)
+
+
+print(tx)
+print(type(tx))
+
+
+sitk.WriteImage(tx, "/home/ioanna/Documents/Thesis/src/registration/reg_results/5.nii")
 

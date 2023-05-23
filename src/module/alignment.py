@@ -1,7 +1,8 @@
 import cv2
+from sklearn.decomposition import PCA
+import os
 import numpy as np
 from module.segmentation import segmentation
-from sklearn.decomposition import PCA
 
 def is_aligned(image, threshold=5):
     # Compute orientation using Hough Transform
@@ -85,4 +86,4 @@ def alignment(image):
     rotated = cv2.warpAffine(result, M, (new_cols, new_rows), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
 
     return rotated
-                             
+                        

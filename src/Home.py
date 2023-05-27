@@ -19,7 +19,8 @@ __Under Construction__
 1. Mapping Sections with Atlas (Mapping page)
 2. Background Segmentation of Section (Segmentation page)
 3. Section Alignment with Axis(Alignment page)
-4. Section Registration to Atlas (Registration page)
+4. Stroke Detection, hemisphere masks and stroke mask creation (Detection page)
+4. Anatomical Mapping to Atlas (Anatomy Page)
 """
 
 

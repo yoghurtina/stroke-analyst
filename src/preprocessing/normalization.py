@@ -127,5 +127,6 @@ def equalize_this(image_file, with_plot=False, gray_scale=True, bins=256):
 #         output_img_path = os.path.join(output_folder_path2, filename)
 #         cv2.imwrite(output_img_path, result)
 
-re = equalize_this("fixed3.jpg")
+re = equalize_this("data/fixed3.jpg")
+print(type(re))
 cv2.imwrite("fixed3.jpg", re)

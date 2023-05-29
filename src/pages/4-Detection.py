@@ -7,15 +7,16 @@ from matplotlib.patches import Polygon
 from module.detection import seg_anything
 from module.normalization import equalize_this
 import os, shutil
+from io import BytesIO
+
 
 st.header("Stroke Lesion Detection")
 col1,col2 = st.columns(2)
 
-def save_uploadedfile(uploadedfile):
-    with open(os.path.join("temp","uploaded.jpg"),"wb") as f:
+def save_uploadedfile(uploadedfile, path):
+    with open(os.path.join(path),"wb") as f:
         f.write(uploadedfile.getbuffer())
-    return st.success("Saved uploaded image to a temporary folder".format(uploadedfile.name))
-
+    return st.success("Saved uploaded image to a temporary folder")
 
 def delete_foldercontents(folder_path):
     for filename in os.listdir(folder_path):
@@ -32,9 +33,16 @@ def delete_foldercontents(folder_path):
 
 uploaded_in_previous_step = Image.open("/home/ioanna/Documents/Thesis/src/temp/alignment/aligned_section.jpg")
 uploaded_array = np.array(uploaded_in_previous_step)
-
 img_height, img_width, _ = uploaded_array.shape
-print(img_width)
+
+# equalized = equalize_this("/home/ioanna/Documents/Thesis/src/temp/alignment/aligned_section.jpg")
+# equalized_pil_img  = Image.fromarray(equalized)
+# byte_io = BytesIO()
+# equalized_pil_img.save(byte_io, format='JPEG')  # Adjust format as needed
+# # Save the bytes-like object to a file
+# save_uploadedfile(byte_io,"/home/ioanna/Documents/Thesis/src/temp/detection/equalized_section.jpg")
+# print(type(uploaded_in_previous_step))
+
 
 # print(img_height, img_width)
 # image = st.image(uploaded_in_previous_step)

@@ -1,12 +1,8 @@
 import numpy as np
 import streamlit as st
 from module.segmentation import segmentation
-import base64
-import time
-import uuid
 from io import BytesIO
 from pathlib import Path
-import re
 import os
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image

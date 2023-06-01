@@ -55,7 +55,8 @@ def cropper():
 def reg_results():
 
     uploaded_in_previous_step = Image.open("src/temp/detection/equalized_section.jpg")
-    st.image(uploaded_in_previous_step, width=300)
+    selected_atlas_section = Image.open("src/temp/mapping/mapped_allen_section.jpg")
+    st.image([uploaded_in_previous_step, selected_atlas_section], caption=["Moving Image", "Fixed Image"], width=300)
 
     moving_image_path = "src/temp/detection/equalized_section.jpg"
     fixed_image_path =  "src/temp/mapping/mapped_allen_section.jpg"

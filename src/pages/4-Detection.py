@@ -31,7 +31,7 @@ def delete_foldercontents(folder_path):
 
 
 
-uploaded_in_previous_step = Image.open("/home/ioanna/Documents/Thesis/src/temp/alignment/aligned_section.jpg")
+uploaded_in_previous_step = Image.open("src/temp/alignment/aligned_section.jpg")
 uploaded_array = np.array(uploaded_in_previous_step)
 img_height, img_width, _ = uploaded_array.shape
 
@@ -95,27 +95,27 @@ if uploaded_in_previous_step:
             bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
             print(bbox_coords)
 
-            seg_results = seg_anything("/home/ioanna/Documents/Thesis/src/temp/alignment/aligned_section.jpg", bbox_coords)
+            seg_results = seg_anything("src/temp/alignment/aligned_section.jpg", bbox_coords)
 
             if seg_results:
-                image_hem1 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/source_image_hem1.jpg')
-                seg_hem1 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/segmented_image_hem1.jpg')
+                image_hem1 = Image.open('src/temp/detection/source_image_hem1.jpg')
+                seg_hem1 = Image.open('src/temp/detection/segmented_image_hem1.jpg')
                 
-                mask1_hem1 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem1.jpg')
-                mask2_hem1 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/mask2_hem1.jpg')
-                mask3_hem1 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem1.jpg')
+                mask1_hem1 = Image.open('src/temp/detection/mask1_hem1.jpg')
+                mask2_hem1 = Image.open('src/temp/detection/mask2_hem1.jpg')
+                mask3_hem1 = Image.open('src/temp/detection/mask3_hem1.jpg')
 
 
                 st.image([image_hem1, seg_hem1], width=300)
                 st.image([mask1_hem1, mask2_hem1, mask3_hem1], width=200)
 
 
-                image_hem2 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/source_image_hem2.jpg')
-                seg_hem2 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/segmented_image_hem2.jpg')
+                image_hem2 = Image.open('src/temp/detection/source_image_hem2.jpg')
+                seg_hem2 = Image.open('src/temp/detection/segmented_image_hem2.jpg')
                 
-                mask1_hem2 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem2.jpg')
-                mask2_hem2 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/mask2_hem2.jpg')
-                mask3_hem2 = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem2.jpg')
+                mask1_hem2 = Image.open('src/temp/detection/mask1_hem2.jpg')
+                mask2_hem2 = Image.open('src/temp/detection/mask2_hem2.jpg')
+                mask3_hem2 = Image.open('src/temp/detection/mask3_hem2.jpg')
 
 
                 st.image([image_hem2, seg_hem2], width=300)

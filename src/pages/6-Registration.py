@@ -32,7 +32,7 @@ aspect_ratio = aspect_dict[aspect_choice]
 
 
 def cropper():
-    uploaded_in_previous_step = Image.open("/home/ioanna/Documents/Thesis/src/temp/detection/equalized_section.jpg")
+    uploaded_in_previous_step = Image.open("src/temp/detection/equalized_section.jpg")
 
     
     if not realtime_update:
@@ -50,42 +50,42 @@ def cropper():
     cropped_img.save(byte_io, format='JPEG')  # Adjust format as needed
 
     # Save the bytes-like object to a file
-    save_uploadedfile(byte_io,"/home/ioanna/Documents/Thesis/src/temp/anatomy/stroked_hemisphere.jpg")
+    save_uploadedfile(byte_io,"src/temp/anatomy/stroked_hemisphere.jpg")
 
 def reg_results():
 
-    uploaded_in_previous_step = Image.open("/home/ioanna/Documents/Thesis/src/temp/detection/equalized_section.jpg")
+    uploaded_in_previous_step = Image.open("src/temp/detection/equalized_section.jpg")
     st.image(uploaded_in_previous_step, width=300)
 
-    moving_image_path = "/home/ioanna/Documents/Thesis/src/temp/detection/equalized_section.jpg"
-    fixed_image_path = "/home/ioanna/Documents/Thesis/src/temp/mapping/mapped_allen_section.jpg"
+    moving_image_path = "src/temp/detection/equalized_section.jpg"
+    fixed_image_path =  "src/temp/mapping/mapped_allen_section.jpg"
 
-    convert_image_nii(moving_image_path,  "/home/ioanna/Documents/Thesis/src/temp/anatomy/moving.nii")
-    convert_image_nii(fixed_image_path,  "/home/ioanna/Documents/Thesis/src/temp/anatomy/fixed.nii")
+    convert_image_nii(moving_image_path, "src/temp/anatomy/moving.nii")
+    convert_image_nii(fixed_image_path,  "src/temp/anatomy/fixed.nii")
 
-    moving_nii_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/moving.nii"
-    fixed_nii_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/fixed.nii"
+    moving_nii_path = "src/temp/anatomy/moving.nii"
+    fixed_nii_path =  "src/temp/anatomy/fixed.nii"
 
     resampled_moving = dpi_fixing(moving_nii_path)
     resampled_fixed = dpi_fixing(fixed_nii_path)
 
-    sitk.WriteImage(resampled_moving, "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_moving.nii" )
-    sitk.WriteImage(resampled_fixed, "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_fixed.nii")
+    sitk.WriteImage(resampled_moving, "src/temp/anatomy/resampled_moving.nii" )
+    sitk.WriteImage(resampled_fixed,  "src/temp/anatomy/resampled_fixed.nii")
 
-    resampled_moving_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_moving.nii"
-    resampled_fixed_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_fixed.nii"
+    resampled_moving_path = "src/temp/anatomy/resampled_moving.nii"
+    resampled_fixed_path =  "src/temp/anatomy/resampled_fixed.nii"
 
     rigid_result =          rigid(resampled_fixed_path, resampled_moving_path)
     affine_result =        affine(resampled_fixed_path, resampled_moving_path)
     non_rigid_result =  non_rigid(resampled_fixed_path, resampled_moving_path)
 
-    convert_to_jpg(rigid_result, "/home/ioanna/Documents/Thesis/src/temp/anatomy/rigid.jpg")
-    convert_to_jpg(affine_result, "/home/ioanna/Documents/Thesis/src/temp/anatomy/affine.jpg" )
-    convert_to_jpg(non_rigid_result, "/home/ioanna/Documents/Thesis/src/temp/anatomy/non_rigid.jpg")
+    convert_to_jpg(rigid_result, "src/temp/anatomy/rigid.jpg")
+    convert_to_jpg(affine_result, "src/temp/anatomy/affine.jpg" )
+    convert_to_jpg(non_rigid_result, "src/temp/anatomy/non_rigid.jpg")
 
-    st.image([Image.open("/home/ioanna/Documents/Thesis/src/temp/anatomy/rigid.jpg"), 
-            Image.open("/home/ioanna/Documents/Thesis/src/temp/anatomy/affine.jpg"), 
-            Image.open("/home/ioanna/Documents/Thesis/src/temp/anatomy/non_rigid.jpg")], width=200, caption=["Rigid Registration", "Affine Registration", "Non-rigid Registration"])
+    st.image([Image.open("src/temp/anatomy/rigid.jpg"), 
+            Image.open("src/temp/anatomy/affine.jpg"), 
+            Image.open("src/temp/anatomy/non_rigid.jpg")], width=200, caption=["Rigid Registration", "Affine Registration", "Non-rigid Registration"])
 
 # moving_hem_path = ""
 # fixed_hem_path = ""
@@ -101,35 +101,35 @@ st.header("Registration Results (Whole section and stroked hemisphere)")
 #     cropper()
 
 def hem_reg_results():
-    moving_hem_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/stroked_hemisphere.jpg"
-    fixed_hem_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/atlas_hem.jpg"
+    moving_hem_path = "src/temp/anatomy/stroked_hemisphere.jpg"
+    fixed_hem_path =  "src/temp/anatomy/atlas_hem.jpg"
 
-    convert_image_nii(moving_hem_path,  "/home/ioanna/Documents/Thesis/src/temp/anatomy/moving_hem.nii")
-    convert_image_nii(fixed_hem_path,  "/home/ioanna/Documents/Thesis/src/temp/anatomy/fixed_hem.nii")
+    convert_image_nii(moving_hem_path,  "src/temp/anatomy/moving_hem.nii")
+    convert_image_nii(fixed_hem_path,   "src/temp/anatomy/fixed_hem.nii")
 
-    moving_nii_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/moving_hem.nii"
-    fixed_nii_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/fixed_hem.nii"
+    moving_nii_path = "src/temp/anatomy/moving_hem.nii"
+    fixed_nii_path =  "src/temp/anatomy/fixed_hem.nii"
 
     resampled_moving = dpi_fixing(moving_nii_path)
     resampled_fixed = dpi_fixing(fixed_nii_path)
 
-    sitk.WriteImage(resampled_moving, "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_moving_hem.nii" )
-    sitk.WriteImage(resampled_fixed, "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_fixed_hem.nii")
+    sitk.WriteImage(resampled_moving, "src/temp/anatomy/resampled_moving_hem.nii" )
+    sitk.WriteImage(resampled_fixed,  "src/temp/anatomy/resampled_fixed_hem.nii")
 
-    resampled_moving_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_moving_hem.nii"
-    resampled_fixed_path = "/home/ioanna/Documents/Thesis/src/temp/anatomy/resampled_fixed_hem.nii"
+    resampled_moving_path = "src/temp/anatomy/resampled_moving_hem.nii"
+    resampled_fixed_path =  "src/temp/anatomy/resampled_fixed_hem.nii"
 
     rigid_result =          rigid(resampled_fixed_path, resampled_moving_path)
     affine_result =        affine(resampled_fixed_path, resampled_moving_path)
     non_rigid_result =  non_rigid(resampled_fixed_path, resampled_moving_path)
 
-    convert_to_jpg(rigid_result, "/home/ioanna/Documents/Thesis/src/temp/anatomy/rigid_hem.jpg")
-    convert_to_jpg(affine_result, "/home/ioanna/Documents/Thesis/src/temp/anatomy/affine_hem.jpg" )
-    convert_to_jpg(non_rigid_result, "/home/ioanna/Documents/Thesis/src/temp/anatomy/non_rigid_hem.jpg")
+    convert_to_jpg(rigid_result, "src/temp/anatomy/rigid_hem.jpg")
+    convert_to_jpg(affine_result, "src/temp/anatomy/affine_hem.jpg" )
+    convert_to_jpg(non_rigid_result, "src/temp/anatomy/non_rigid_hem.jpg")
 
-    st.image([Image.open("/home/ioanna/Documents/Thesis/src/temp/anatomy/rigid_hem.jpg"), 
-            Image.open("/home/ioanna/Documents/Thesis/src/temp/anatomy/affine_hem.jpg"), 
-            Image.open("/home/ioanna/Documents/Thesis/src/temp/anatomy/non_rigid_hem.jpg")], width=200, caption=["Rigid Registration", "Affine Registration", "Non-rigid Registration"])
+    st.image([Image.open("src/temp/anatomy/rigid_hem.jpg"), 
+              Image.open("src/temp/anatomy/affine_hem.jpg"), 
+              Image.open("src/temp/anatomy/non_rigid_hem.jpg")], width=200, caption=["Rigid Registration", "Affine Registration", "Non-rigid Registration"])
 
 
 

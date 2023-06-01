@@ -8,7 +8,7 @@ from PIL import Image
 
 
 def find_mask(image):
-    CHECKPOINT_PATH = "/home/ioanna/Documents/Thesis/src/sam_weights/sam_vit_b_01ec64.pth"
+    CHECKPOINT_PATH = "src/sam_weights/sam_vit_b_01ec64.pth"
     DEVICE = 'cpu' # torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     MODEL_TYPE = "vit_b"
 
@@ -49,4 +49,4 @@ def find_mask(image):
 
     return True
 
-find_mask("moving.jpg")
+# find_mask("moving.jpg")

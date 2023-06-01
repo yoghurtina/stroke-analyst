@@ -22,7 +22,7 @@ def rigid(fixed_image_path, moving_image_path):
     elastixImageFilter.SetMovingImage(sitk.ReadImage(moving_image_path))
     elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap("rigid"))
     elastixImageFilter.Execute()
-    sitk.WriteImage(elastixImageFilter.GetResultImage(), "/home/ioanna/Documents/Thesis/src/temp/anatomy/rigid.nii")
+    sitk.WriteImage(elastixImageFilter.GetResultImage(), "src/temp/anatomy/rigid.nii")
 
     return elastixImageFilter.GetResultImage()
 
@@ -34,7 +34,7 @@ def affine(fixed_image_path, moving_image_path):
     elastixImageFilter.SetMovingImage(sitk.ReadImage(moving_image_path))
     elastixImageFilter.SetParameterMap(sitk.GetDefaultParameterMap("affine"))
     elastixImageFilter.Execute()
-    sitk.WriteImage(elastixImageFilter.GetResultImage(),  "/home/ioanna/Documents/Thesis/src/temp/anatomy/affine.nii")
+    sitk.WriteImage(elastixImageFilter.GetResultImage(),  "src/temp/anatomy/affine.nii")
 
     return elastixImageFilter.GetResultImage()
 
@@ -65,7 +65,7 @@ def non_rigid(fixed_image_path, moving_image_path):
     elastixImageFilter.Execute()
 
     # Save the resulting image
-    sitk.WriteImage(elastixImageFilter.GetResultImage(), "/home/ioanna/Documents/Thesis/src/temp/anatomy/non_rigid.nii")
+    sitk.WriteImage(elastixImageFilter.GetResultImage(), "src/temp/anatomy/non_rigid.nii")
 
     return elastixImageFilter.GetResultImage()
 

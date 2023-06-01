@@ -38,10 +38,10 @@ with col1:
     if uploaded_file:
         image = st.image(uploaded_file,width=300)
         image = Image.open(uploaded_file).convert("RGB")
-        image.save("/home/ioanna/Documents/Thesis/src/temp/mapping/uploaded_section.jpg")
+        image.save("src/temp/mapping/uploaded_section.jpg")
 
 with col2:
-    folder_path = '/home/ioanna/Documents/Thesis/raw_data/atlas'
+    folder_path = 'raw_data/atlas/'
 
     # Read photos from the local folder
     photos = read_photos_from_folder(folder_path)
@@ -63,7 +63,7 @@ with col2:
         if selected:
             print(type(selected))
             selected = Image.open(selected).convert("RGB")
-            selected.save("/home/ioanna/Documents/Thesis/src/temp/mapping/mapped_allen_section.jpg")
+            selected.save("src/temp/mapping/mapped_allen_section.jpg")
 
 
 

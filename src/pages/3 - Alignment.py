@@ -16,8 +16,8 @@ def rotate_image(image, degrees):
     rotated_image = image.rotate(degrees)
     return rotated_image
 
-image_from_previous_step = Image.open("/home/ioanna/Documents/Thesis/src/temp/segmentation/background_segmented_image.jpg")
-mask_from_previous_step =  Image.open("/home/ioanna/Documents/Thesis/src/temp/segmentation/mask_segmented_image.jpg") 
+image_from_previous_step = Image.open("src/temp/segmentation/background_segmented_image.jpg")
+mask_from_previous_step =  Image.open("src/temp/segmentation/mask_segmented_image.jpg") 
 
 st.image([image_from_previous_step, mask_from_previous_step], width=300, caption=["Previously Background Segmented Section", "Mask of previously Segmented Section"])
 
@@ -46,7 +46,7 @@ def main():
 
             rotated_image_array = np.array(rotated_image)
             rotated_pil_image = Image.fromarray(rotated_image_array)
-            rotated_pil_image.save("/home/ioanna/Documents/Thesis/src/temp/alignment/aligned_section.jpg")
+            rotated_pil_image.save("src/temp/alignment/aligned_section.jpg")
 
               
 

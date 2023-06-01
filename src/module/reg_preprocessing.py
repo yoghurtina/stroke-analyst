@@ -106,14 +106,14 @@ def normalization(fixed_image, moving_image):
     fixed_norm_image.SetSpacing((1.0, 1.0, 1.0)) # Replace with appropriate spacing values
     fixed_norm_image.SetDirection(np.identity(2).ravel()) # Replace with appropriate direction matrix
     fixed_norm_image=sitk.Cast(fixed_norm_image,sitk.sitkFloat32 )
-    sitk.WriteImage(fixed_norm_image, 'norm_fixed.nii')
+    # sitk.WriteImage(fixed_norm_image, 'norm_fixed.nii')
 
     moving_norm_image =sitk.GetImageFromArray(moving_norm)
     moving_norm_image.SetOrigin((0.0, 0.0, 0.0)) # Replace with appropriate origin values
     moving_norm_image.SetSpacing((1.0, 1.0, 1.0)) # Replace with appropriate spacing values
     moving_norm_image.SetDirection(np.identity(2).ravel()) # Replace with appropriate direction matrix
     moving_norm_image=sitk.Cast(moving_norm_image, sitk.sitkFloat32)
-    sitk.WriteImage(moving_norm_image, 'norm_moving.nii')
+    # sitk.WriteImage(moving_norm_image, 'norm_moving.nii')
 
     # print(fixed_norm.shape, moving_norm.shape)
     return fixed_norm, moving_norm, fixed_norm_image, moving_norm_image

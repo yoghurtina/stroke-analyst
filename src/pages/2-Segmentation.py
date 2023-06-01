@@ -17,10 +17,10 @@ def load_image(image_file):
 def save_uploadedfile(uploadedfile):
     with open(os.path.join("temp/segmentation","background_segmented_section.jpg"),"wb") as f:
         f.write(uploadedfile.getbuffer())
-    return st.success("Saved File:{} to tempDir".format("background_segmented_section"))
+    return st.success("Saved File:{}".format("background_segmented_section"))
 
-uploaded_in_previous_step = Image.open("/home/ioanna/Documents/Thesis/src/temp/mapping/uploaded_section.jpg")
-selected_allen_section =    Image.open("/home/ioanna/Documents/Thesis/src/temp/mapping/mapped_allen_section.jpg") 
+uploaded_in_previous_step = Image.open("src/temp/mapping/uploaded_section.jpg")
+selected_allen_section =    Image.open("src/temp/mapping/mapped_allen_section.jpg") 
 
 st.image([uploaded_in_previous_step, selected_allen_section], width=300, caption=["Previously Uploaded Section", "Previously Mapped Allen Section"])
 
@@ -47,8 +47,8 @@ def main():
             # save_uploadedfile(uploaded_file)
             segmented_pil_image = Image.fromarray(seg)
             mask_pil_image = Image.fromarray(mask)
-            segmented_pil_image.save("/home/ioanna/Documents/Thesis/src/temp/segmentation/background_segmented_image.jpg")
-            mask_pil_image.save("/home/ioanna/Documents/Thesis/src/temp/segmentation/mask_segmented_image.jpg")
+            segmented_pil_image.save("src/temp/segmentation/background_segmented_image.jpg")
+            mask_pil_image.save("src/temp/segmentation/mask_segmented_image.jpg")
 
 if __name__ == "__main__":
     main()

@@ -14,7 +14,7 @@ def encode_image(filepath):
     return encoded
 
 def seg_anything(image, bbox):
-    CHECKPOINT_PATH = "/home/ioanna/Documents/Thesis/src/sam_weights/sam_vit_b_01ec64.pth"
+    CHECKPOINT_PATH = "src/sam_weights/sam_vit_b_01ec64.pth"
     DEVICE = 'cpu' # torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     MODEL_TYPE = "vit_b"
 
@@ -109,34 +109,34 @@ def seg_anything(image, bbox):
     
 
     source_image_array = Image.fromarray(source_image_hem1)
-    source_image_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/source_image_hem1.jpg")
+    source_image_array.save("src/temp/detection/source_image_hem1.jpg")
 
     seg_image_array = Image.fromarray(segmented_image_hem1)
-    seg_image_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/segmented_image_hem1.jpg")
+    seg_image_array.save("src/temp/detection/segmented_image_hem1.jpg")
     
     mask_array = Image.fromarray(masks_hem1[0])
-    mask_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem1.jpg")
+    mask_array.save("src/temp/detection/mask1_hem1.jpg")
 
     mask_array = Image.fromarray(masks_hem1[1])
-    mask_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/mask2_hem1.jpg")
+    mask_array.save("src/temp/detection/mask2_hem1.jpg")
 
     mask_array = Image.fromarray(masks_hem1[2])
-    mask_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem1.jpg")
+    mask_array.save("src/temp/detection/mask3_hem1.jpg")
 
     source_image_array = Image.fromarray(source_image_hem2)
-    source_image_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/source_image_hem2.jpg")
+    source_image_array.save("src/temp/detection/source_image_hem2.jpg")
 
     seg_image_array = Image.fromarray(segmented_image_hem2)
-    seg_image_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/segmented_image_hem2.jpg")
+    seg_image_array.save("src/temp/detection/segmented_image_hem2.jpg")
     
     mask_array = Image.fromarray(masks_hem2[0])
-    mask_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem2.jpg")
+    mask_array.save("src/temp/detection/mask1_hem2.jpg")
 
     mask_array = Image.fromarray(masks_hem2[1])
-    mask_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/mask2_hem2.jpg")
+    mask_array.save("src/temp/detection/mask2_hem2.jpg")
 
     mask_array = Image.fromarray(masks_hem2[2])
-    mask_array.save("/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem2.jpg")
+    mask_array.save("src/temp/detection/mask3_hem2.jpg")
 
 
     return True

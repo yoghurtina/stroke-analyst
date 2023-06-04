@@ -62,5 +62,5 @@ def segmentation(image_file):
 #         output_img_path = os.path.join(output_folder_path1, "s"+filename)
 #         cv2.imwrite(output_img_path, result)
 
-result, mask = segmentation("258allen.png")
-cv2.imwrite("fixed2.jpg", result)
+result, mask = segmentation("test.png")
+cv2.imwrite("test.jpg", result)

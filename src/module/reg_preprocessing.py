@@ -26,7 +26,7 @@ def convert_image_nii(img_path, save_path):
     nib.save(nifti_file, save_path) # Here you put the path + the extionsion 'nii' or 'nii.gz'
 
 
-def dpi_fixing(image_path, dpi = [300, 300]):
+def dpi_fixing(image_path, dpi = [600, 600]):
     image = sitk.ReadImage(image_path)
     # Get the current spacing and size of the image
     spacing = image.GetSpacing()

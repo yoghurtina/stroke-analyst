@@ -4,3 +4,4 @@ sam_weights
 training_data
 results
 data
+__pycache__

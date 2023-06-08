@@ -5,3 +5,9 @@ training_data
 results
 data
 __pycache__
+TransformParameters.0.txt
+TransformParameters.1.txt
+elastix.log
+original.jpg
+affected_regions.txt
+sm_8.jpg

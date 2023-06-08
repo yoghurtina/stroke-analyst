@@ -59,7 +59,7 @@ st.header("Registration Results (Whole section and stroked hemisphere)")
 
 def hem_reg_results():
     moving_hem_path = "src/temp/cropper/stroked_hemisphere.jpg"
-    fixed_hem_path =  "src/temp/registration/atlas_hem1.jpg"
+    fixed_hem_path =  "src/temp/registration/fixed_hem.jpg"
 
     convert_image_nii(moving_hem_path,  "src/temp/registration/moving_hem.nii")
     convert_image_nii(fixed_hem_path,   "src/temp/registration/fixed_hem.nii")
@@ -67,8 +67,8 @@ def hem_reg_results():
     moving_nii_path = "src/temp/registration/moving_hem.nii"
     fixed_nii_path =  "src/temp/registration/fixed_hem.nii"
 
-    resampled_moving = dpi_fixing(moving_nii_path, dpi=[300,300])
-    resampled_fixed = dpi_fixing(fixed_nii_path, dpi=[300,300])
+    resampled_moving = dpi_fixing(moving_nii_path, dpi=[600,600])
+    resampled_fixed = dpi_fixing(fixed_nii_path, dpi=[600,600])
 
     sitk.WriteImage(resampled_moving, "src/temp/registration/resampled_moving_hem.nii" )
     sitk.WriteImage(resampled_fixed,  "src/temp/registration/resampled_fixed_hem.nii")

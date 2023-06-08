@@ -9,15 +9,16 @@ from segment_anything import SamPredictor, sam_model_registry
 from segment_anything.utils.transforms import ResizeLongestSide
 
 # https://colab.research.google.com/drive/1F6uRommb3GswcRlPZWpkAQRMVNdVH7Ww?usp=sharing#scrollTo=lz7B4NDoJRxJ
+# https://colab.research.google.com/drive/1SNzKH_W0cZ-UllFwxUjxi7Ow8qwPdlC1#scrollTo=Ug6MN1IcqEm-
 
-CHECKPOINT_PATH = "/home/ioanna/Documents/Thesis/src/sam_weights/sam_vit_b_01ec64.pth"
-DEVICE = 'cpu' # torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+CHECKPOINT_PATH = "src/sam_weights/sam_vit_b_01ec64.pth"
+DEVICE = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 MODEL_TYPE = "vit_b"
 
 # extract the bounding box coordinates which will be used to feed into SAM as prompts.
 bbox_coords = {}
-for f in sorted(Path('ground-truth-maps/ground-truth-maps/').iterdir())[:100]: # bounding boxes masks
-    k = f.stem[:-3]
+for f in sorted(Path('drive/MyDrive/training_data/stroke_bounding_boxes').iterdir()): # bounding boxes masks
+    k = f.stem[4:]
     im = cv2.imread(f.as_posix())
     gray=cv2.cvtColor(im,cv2.COLOR_BGR2GRAY)
 
@@ -30,9 +31,8 @@ for f in sorted(Path('ground-truth-maps/ground-truth-maps/').iterdir())[:100]: #
 # extract the ground truth segmentation masks
 ground_truth_masks = {}
 for k in bbox_coords.keys():
-    gt_grayscale = cv2.imread(f'ground-truth-pixel/ground-truth-pixel/{k}-px.png', cv2.IMREAD_GRAYSCALE) # segmented piece from original gray photo   
+    gt_grayscale = cv2.imread(f'drive/MyDrive/training_data/stroke_extracted_normalized/se_{k}.jpg', cv2.IMREAD_GRAYSCALE) # segmented piece from original gray photo   
     ground_truth_masks[k] = (gt_grayscale == 0)
-
 
 sam_model = sam_model_registry[MODEL_TYPE](checkpoint=CHECKPOINT_PATH)
 sam_model.to(DEVICE)
@@ -44,7 +44,7 @@ sam_model.train();
 
 transformed_data = defaultdict(dict)
 for k in bbox_coords.keys():
-    image = cv2.imread(f'scans/scans/{k}.png') # original image
+    image = cv2.imread(f'drive/MyDrive/training_data/normalized/s{k}.jpg') # original image
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)  
     transform = ResizeLongestSide(sam_model.image_encoder.img_size)
     input_image = transform.apply_image(image)
@@ -72,8 +72,6 @@ keys = list(bbox_coords.keys())
 # run fine-tuning
 
 from statistics import mean
-
-from tqdm import tqdm
 from torch.nn.functional import threshold, normalize
 
 num_epochs = 100
@@ -124,35 +122,3 @@ for epoch in range(num_epochs):
     losses.append(epoch_losses)
     print(f'EPOCH: {epoch}')
     print(f'Mean loss: {mean(epoch_losses)}')
-
-
-mean_losses = [mean(x) for x in losses]
-mean_losses
-
-plt.plot(list(range(len(mean_losses))), mean_losses)
-plt.title('Mean epoch loss')
-plt.xlabel('Epoch Number')
-plt.ylabel('Loss')
-
-plt.show()
-
-# Store model    
-
-PATH = ""
-
-print("Model's state_dict:")
-for param_tensor in sam_model.state_dict():
-    print(param_tensor, "\t", sam_model.state_dict()[param_tensor].size())
-
-print("Model weight:")    
-print(sam_model.weight)
-
-print("Model bias:")    
-print(sam_model.bias)
-
-print("---")
-print("Optimizer's state_dict:")
-for var_name in optimizer.state_dict():
-    print(var_name, "\t", optimizer.state_dict()[var_name])
-
-torch.save(sam_model.state_dict(), PATH)

@@ -20,7 +20,7 @@ def save_uploadedfile(uploadedfile, path):
 
 def reg_results():
 
-    uploaded_in_previous_step = Image.open("src/temp/detection/equalized_section.jpg")
+    uploaded_in_previous_step = Image.open("src/temp/alignment/aligned_section.jpg")
     selected_atlas_section = Image.open("src/temp/mapping/mapped_allen_section.jpg")
     st.image([uploaded_in_previous_step, selected_atlas_section], caption=["Moving Image", "Fixed Image"], width=300)
 
@@ -58,7 +58,7 @@ def reg_results():
 st.header("Registration Results (Whole section and stroked hemisphere)")
 
 def hem_reg_results():
-    moving_hem_path = "src/temp/registration/stroked_hemisphere.jpg"
+    moving_hem_path = "src/temp/cropper/stroked_hemisphere.jpg"
     fixed_hem_path =  "src/temp/registration/atlas_hem1.jpg"
 
     convert_image_nii(moving_hem_path,  "src/temp/registration/moving_hem.nii")

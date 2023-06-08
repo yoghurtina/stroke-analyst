@@ -32,7 +32,7 @@ aspect_ratio = aspect_dict[aspect_choice]
 
 
 def cropper():
-    uploaded_in_previous_step = Image.open("src/temp/detection/equalized_section.jpg")
+    uploaded_in_previous_step = Image.open("src/temp/alignment/aligned_section.jpg")
 
 
     if not realtime_update:
@@ -50,7 +50,7 @@ def cropper():
     cropped_img.save(byte_io, format='JPEG')  # Adjust format as needed
 
     # Save the bytes-like object to a file
-    save_uploadedfile(byte_io,"src/temp/registration/stroked_hemisphere.jpg")
+    save_uploadedfile(byte_io,"src/temp/cropper/stroked_hemisphere.jpg")
 
 
 cropper()

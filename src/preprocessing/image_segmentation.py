@@ -41,14 +41,19 @@ def segmentation(image_file):
 
 
 # # Load the image
-# path1 = "/home/ioanna/Documents/Thesis/training/input"
+# path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas"
 
 # # Set the path to the folder where you want to save the processed images
-# output_folder_path1 = "/home/ioanna/Documents/Thesis/training/segmented"
+# output_folder_path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas_seg"
+# output_folder_path2 = "/home/ioanna/Documents/Thesis/raw_data/atlas_mask"
+
 
 # # Create the output folder if it doesn't exist
 # if not os.path.exists(output_folder_path1):
 #     os.makedirs(output_folder_path1)
+
+# if not os.path.exists(output_folder_path2):
+#     os.makedirs(output_folder_path2)
 
 # # Loop through all the files in the folder
 # for filename in os.listdir(path1):
@@ -59,8 +64,10 @@ def segmentation(image_file):
 #         # Load the image
 #         img_path = os.path.join(path1, filename)
 #         result, mask = segmentation(img_path)
-#         output_img_path = os.path.join(output_folder_path1, "s"+filename)
+#         output_img_path = os.path.join(output_folder_path1, filename)
+#         output_mask_path = os.path.join(output_folder_path2, "mask_" + filename)
 #         cv2.imwrite(output_img_path, result)
+#         cv2.imwrite(output_mask_path, mask)
 
-result, mask = segmentation("test.png")
-cv2.imwrite("test.jpg", result)
+# # result, mask = segmentation("fixed_hem.png")
+# # cv2.imwrite("fixed_hem.jpg", result)

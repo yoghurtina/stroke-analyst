@@ -108,14 +108,6 @@ def equalize_this(image_file, with_plot=False, gray_scale=True, bins=256):
 #         output_img_path = os.path.join(output_folder_path, filename)
 #         cv2.imwrite(output_img_path, result)
 
-# for filename in os.listdir(path1):
-#     # Check if the file is an image
-#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-#         # Load the image
-#         img_path = os.path.join(path1, filename)
-#         result = equalize_this(img_path, with_plot=False, gray_scale=True)
-#         output_img_path = os.path.join(output_folder_path1, filename)
-#         cv2.imwrite(output_img_path, result)
 
 # for filename in os.listdir(path2):
 #     # Check if the file is an image
@@ -127,6 +119,15 @@ def equalize_this(image_file, with_plot=False, gray_scale=True, bins=256):
 #         output_img_path = os.path.join(output_folder_path2, filename)
 #         cv2.imwrite(output_img_path, result)
 
-re = equalize_this("test.jpg")
-print(type(re))
-cv2.imwrite("test1.jpg", re)
+path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas_seg"
+output_folder_path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas_norm"
+
+
+for filename in os.listdir(path1):
+    # Check if the file is an image
+    if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+        # Load the image
+        img_path = os.path.join(path1, filename)
+        result = equalize_this(img_path, with_plot=False, gray_scale=True)
+        output_img_path = os.path.join(output_folder_path1, filename)
+        cv2.imwrite(output_img_path, result)

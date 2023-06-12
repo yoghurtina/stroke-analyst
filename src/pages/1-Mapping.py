@@ -41,7 +41,7 @@ with col1:
         image.save("src/temp/mapping/uploaded_section.jpg")
 
 with col2:
-    folder_path = 'raw_data/atlas/'
+    folder_path = 'raw_data/atlas_norm/'
 
     # Read photos from the local folder
     photos = read_photos_from_folder(folder_path)

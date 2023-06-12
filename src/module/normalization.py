@@ -5,7 +5,6 @@ import nibabel as nib
 import cv2
 import os
 
-# path = "/home/ioanna/Documents/Thesis/src/segmentation/seg_results"
 def convert_to_grayscale(input_path):
     with Image.open(input_path) as img:
         img = img.convert('L')
@@ -19,9 +18,6 @@ def read_this(image_file, gray_scale=False):
     else:
         image_src = cv2.cvtColor(image_src, cv2.COLOR_BGR2RGB)
 
-
-    # with Image.open(image_file) as img:
-    #     img = img.convert('L')
     return image_src
     
 

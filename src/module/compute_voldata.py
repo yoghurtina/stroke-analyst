@@ -36,4 +36,5 @@ def compute_volumetric_data(whole_mask, lesion_mask, left_hem_mask, right_hem_ma
     df.to_csv(save_dir + '/results.csv', index=False)
 
 
-compute_volumetric_data("/home/ioanna/Documents/Thesis/src/temp/segmentation/mask_segmented_image.jpg","/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem1.jpg", "/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem1.jpg", "/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem2.jpg", "/home/ioanna/Documents/Thesis/src/temp")
+compute_volumetric_data("/home/ioanna/Documents/Thesis/src/temp/segmentation/mask_segmented_image.jpg","/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem1.jpg",\
+                         "/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem1.jpg", "/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem2.jpg", "/home/ioanna/Documents/Thesis/src/temp")

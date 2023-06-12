@@ -169,7 +169,7 @@ def extract_allen_slice(index):
 def extract_allen_mask(index):
     size = [528, 320, 456]
     # VOL = 3-D matrix (volume) of atlas Nissl
-    with open('/home/ioanna/Documents/Thesis/src/temp/annotation.raw', 'rb') as file:
+    with open('/home/ioanna/Documents/Thesis/raw_data/annotation.raw', 'rb') as file:
         ANO = np.fromfile(file, dtype=np.uint8, count=np.prod(size))
     ANO = np.reshape(ANO, size)
 
@@ -254,14 +254,14 @@ def region_naming(json_data, allen_masks, bregma_distance, lesion_AS, save_dir):
 
 
 # Load JSON data from file and convert to dictionary
-with open('/home/ioanna/Documents/Thesis/src/temp/acronyms.json') as file:
+with open('/home/ioanna/Documents/Thesis/raw_data/acronyms.json') as file:
     json_data = json.load(file)['msg']
     json_data = {item['id']: item for item in json_data}
 
 import scipy.io
 from PIL import Image
 # Load .mat file
-mat = scipy.io.loadmat('/home/ioanna/Documents/Thesis/src/temp/allen_masks.mat')
+mat = scipy.io.loadmat('/home/ioanna/Documents/Thesis/raw_data/allen_masks.mat')
 
 
 # Example usage
@@ -302,7 +302,7 @@ def json_find(json_data, id_val):
 
     return None
 
-with open('/home/ioanna/Documents/Thesis/src/temp/acronyms.json') as file:
+with open('/home/ioanna/Documents/Thesis/raw_data/acronyms.json') as file:
     json_data = json.load(file)
 
 print(json_find(json_data['msg'], 1009))

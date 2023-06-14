@@ -169,52 +169,6 @@ print("Std IoU:", std_iou)
 
 
 
-# from sklearn.metrics import precision_recall_fscore_support
-
-# def precision_recall_f1(mask1_path, mask2_path):
-#     mask1 = np.array(Image.open(mask1_path))
-#     mask2 = np.array(Image.open(mask2_path))
-#     mask2 = mask2[:, :, 0]
-
-#     mask1 = mask1.flatten()
-#     mask2 = mask2.flatten()
-#     precision, recall, f1, _ = precision_recall_fscore_support(mask1, mask2, average="binary")
-#     return precision, recall, f1
-
-
-# precision = []
-# recall = []
-# f1 = []
-
-# for i in range(14):
-#     background_mask_path = f"/home/ioanna/Documents/Thesis/results/validation/masks/{i+1}.jpg"
-#     print(background_mask_path)
-#     ground_truth_mask_path = f"/home/ioanna/Documents/Thesis/results/validation/ground_truth_bg_mask/bgs_{i+1}.jpg"
-#     print(ground_truth_mask_path)
-#     precision, recall, f1 , _= precision_recall_f1(background_mask_path, ground_truth_mask_path)
-#     # if haus_score >= 0.85:
-#     #     # iou_score = 0.9
-#     precision.append(precision)
-#     recall.append(recall)
-#     f1.append(f1)
-
-# print(precision, recall, f1)
-
-
-# mean_iou = np.mean(precision)
-# std_iou = np.std(precision)
-
-# print("Mean IoU:", mean_iou)
-# print("Std IoU:", std_iou)
-
-
-# mean_recall = np.mean(recall)
-# std_recall = np.std(recall)
-
-# print("Mean IoU:", mean_recall)
-# print("Std IoU:", std_recall)
-
-
 # for postprocessing stroke masks
 import cv2
 import matplotlib.pyplot as plt
@@ -222,12 +176,6 @@ import matplotlib.pyplot as plt
 def gaussian_blur(mask, kernel_size=5, sigma=0):
     blurred = cv2.GaussianBlur(mask, (kernel_size, kernel_size), sigma)
     return blurred
-
-# # Example usage
-# mask = cv2.imread("mask1_hem1.jpg", cv2.IMREAD_GRAYSCALE)
-# blurred = gaussian_blur(mask, kernel_size=5, sigma=0)
-# plt.imshow( blurred)
-# plt.show()
 
 def morphological_operations(mask, kernel_size=5, iterations=1):
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (kernel_size, kernel_size))

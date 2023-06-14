@@ -1,7 +1,7 @@
 import SimpleITK as sitk
 import matplotlib.pyplot as plt 
 
-fixed_image_path = 'data/norm_fixed copy.nii'
+fixed_image_path = 'data/fixed.nii'
 # fixed_image_path = 'newimage.nii'
 # fixed_image_path = 'fixed_bn2_68.nii'
 # fixed_image_path = 'newfixed.nii'
@@ -9,7 +9,7 @@ fixed_image_path = 'data/norm_fixed copy.nii'
 
 
 
-moving_image_path = 'data/norm_moving copy.nii'
+moving_image_path = 'data/moving.nii'
 # moving_image_path = 'moving.nii'
 # moving_image_path = 'moving_bn2_68.nii'
 # moving_image_path = 'newmoving.nii'

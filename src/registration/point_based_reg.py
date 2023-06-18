@@ -1,5 +1,4 @@
 import SimpleITK as sitk
-import itk
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image

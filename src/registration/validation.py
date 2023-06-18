@@ -1,124 +1,188 @@
 import SimpleITK as sitk
 import numpy as np
-from scipy import stats
+from PIL import Image
+import cv2
 
-def validate_registration(orig_img, reg_img):
-    """
-    Perform statistical validation of registration results using the mean and
-    standard deviation of the intensity values in the images.
-
-    Parameters:
-    orig_img (ndarray): The original image.
-    reg_img (ndarray): The registered image.
-
-    Returns:
-    result (dict): A dictionary containing the results of the validation.
-    """
-
-    # Compute the mean and standard deviation of the intensity values in the original image
-    orig_mean = np.mean(orig_img)
-    orig_std = np.std(orig_img)
-
-    # Compute the mean and standard deviation of the intensity values in the registered image
-    reg_mean = np.mean(reg_img)
-    reg_std = np.std(reg_img)
-
-    # Compute the differences between the mean and standard deviation of the original and registered images
-    mean_diff = np.abs(reg_mean - orig_mean)
-    std_diff = np.abs(reg_std - orig_std)
-
-    # Compute the p-values for the differences using a two-tailed t-test
-    mean_pval = stats.ttest_ind(orig_img.flatten(), reg_img.flatten(), equal_var=False)[1]
-    std_pval = stats.ttest_ind(orig_img.flatten(), reg_img.flatten(), equal_var=False)[1]
-
-    # Store the results in a dictionary
-    result = {
-        'mean_diff': mean_diff,
-        'std_diff': std_diff,
-        'mean_pval': mean_pval,
-        'std_pval': std_pval
-    }
-
-    return result
-
-import numpy as np
-
-def mad(img1, img2):
-    return np.mean(np.abs(img1 - img2))
-
-def rmse(img1, img2):
-    mse = np.mean((img1 - img2) ** 2)
-    rmse = np.sqrt(mse)
-    return rmse
-
-import numpy as np
-from scipy.stats import pearsonr
-
-def pcc(img1, img2):
-    # Flatten the images into 1D arrays
-    img1_flat = img1.flatten()
-    img2_flat = img2.flatten()
-    # Calculate the PCC between the two arrays
-    pcc, _ = pearsonr(img1_flat, img2_flat)
-    return pcc
-
-# the images should be binary masks of the segmented regions. The function calculates the intersection between the two masks, computes the union of the masks, 
-# and then returns the IoU score.
-# The IoU score ranges from 0 to 1, where 1 indicates a perfect overlap between the segmented regions and 0 indicates no overlap
-def iou(img1, img2):
-    intersection = np.logical_and(img1, img2)
-    union = np.logical_or(img1, img2)
-    iou_score = np.sum(intersection) / np.sum(union)
-    return iou_score
+from skimage.metrics import structural_similarity as compare_ssim
+from skimage.measure import label, regionprops
 
 
-import numpy as np
+from skimage.metrics import structural_similarity as ssim
 from scipy.spatial.distance import directed_hausdorff
 
-# binary masks of original ang registered
-def hausdorff(img1, img2):
-    # Get the coordinates of the points in the segmented regions
-    points1 = np.array(np.nonzero(img1)).T
-    points2 = np.array(np.nonzero(img2)).T
+
+def calculate_mutual_information(image1, image2, num_bins=256):
+    # Calculate the joint histogram
+    ref_img = image1[:, :, 0]
+    reg_img = image2[:image1.shape[0], :image1.shape[1]]
+
+    # if image1.shape != image2.shape:
+    #     # Resize one of the images to match the size of the other image
+    #     image1 = cv2.resize(image1, image2.shape[::-1])
+    joint_histogram, _, _ = np.histogram2d(
+        ref_img.ravel(), reg_img.ravel(), bins=num_bins)
+
+    # Normalize the joint histogram
+    joint_histogram = joint_histogram / np.sum(joint_histogram)
+
+    # Calculate marginal histograms
+    hist1, _ = np.histogram(ref_img.ravel(), bins=num_bins)
+    hist2, _ = np.histogram(reg_img.ravel(), bins=num_bins)
+
+    # Normalize the marginal histograms
+    hist1 = hist1 / np.sum(hist1)
+    hist2 = hist2 / np.sum(hist2)
+
+    # Calculate the mutual information
+    epsilon = np.finfo(float).eps  # small value to avoid log(0)
+    mi = np.sum(joint_histogram * np.log2((joint_histogram + epsilon) / (hist1[:, None] * hist2[None, :])))
     
-    # Calculate the directed Hausdorff distance between the two sets of points
-    dist1 = directed_hausdorff(points1, points2)[0]
-    dist2 = directed_hausdorff(points2, points1)[0]
-    
-    # Return the maximum distance between the two sets of points
-    hd_score = max(dist1, dist2)
-    return hd_score
+    return mi
 
 
-moving_image_path = ''
-registered_image_path = ''
+
+ref_image_path = '/home/ioanna/Documents/Thesis/temp/1/mapped_allen_section.jpg'
+registered_image_path1 = '/home/ioanna/Documents/Thesis/temp/1/rigid.jpg'
+registered_image_path2 = '/home/ioanna/Documents/Thesis/temp/1/affine.jpg'
+registered_image_path3 = '/home/ioanna/Documents/Thesis/temp/1/non_rigid.jpg'
+
 
 # initial moving image
-orig = sitk.ReadImage(moving_image_path)
+orig = Image.open(ref_image_path)
 # moving image array
-orig_array = sitk.GetArrayFromImage(orig)
+orig_array = np.array(orig)
 
 
 # registred image
-reg = sitk.ReadImage(registered_image_path)
+reg1 = Image.open(registered_image_path1)
 # convert registered to array
-reg_array = sitk.GetArrayFromImage(reg)
+reg_array1 = np.array(reg1)
 
-result = validate_registration(orig_array, reg_array)
-print(result)
+# registred image
+reg2 = Image.open(registered_image_path2)
+# convert registered to array
+reg_array2 = np.array(reg2)
 
-result = mad(orig_array, reg_array)
-print(result)
-
-result = rmse(orig_array, reg_array)
-print(result)
-
-result = pcc(orig_array, reg_array)
-print(result)
-
-result = iou(orig_array, reg_array)
-print(result)
+# registred image
+reg3 = Image.open(registered_image_path3)
+# convert registered to array
+reg_array3 = np.array(reg3)
 
 
-result = hausdorff(orig_array, reg_array)
-print(result)
+def normalize_image(img):
+    """
+    Normalize an image to have zero mean and unit variance.
+
+    """
+    
+    return (img - np.mean(img)) / np.std(img)
+
+def calculate_ncc(ref_img, reg_img):
+    """
+    Calculate the NCC metric between two images.
+    """
+    ref_img_norm = normalize_image(ref_img)
+    print(ref_img_norm.shape)
+    reg_img_norm = normalize_image(reg_img[:ref_img.shape[0], :ref_img.shape[1]])
+    print(reg_img_norm.shape)
+    ref_img_norm = ref_img_norm[:, :, 0]
+    print(ref_img_norm.shape)
+    
+    ncc = np.sum((ref_img_norm - np.mean(ref_img_norm)) * (reg_img_norm - np.mean(reg_img_norm))) / \
+        (np.std(ref_img_norm) * np.std(reg_img_norm) * ref_img_norm.size)
+    return ncc
+
+def calculate_ssim(image1, image2):
+    """Calculate Structural Similarity Index (SSIM) between two images."""
+    image1 = image1[:, :, 0]
+    image2 = image2[:image1.shape[0], :image1.shape[1]]
+
+
+    ssim = compare_ssim(image1, image2, data_range=image2.max() - image2.min())
+    return ssim
+
+
+def calculate_hd(ref_img, reg_img):
+    """
+    Calculate the HD metric between two images.
+    """
+    ref_img = ref_img[:, :, 0]
+    reg_img = reg_img[:ref_img.shape[0], :ref_img.shape[1]]
+
+    hd = max(directed_hausdorff(ref_img, reg_img)[0], directed_hausdorff(reg_img, ref_img)[0])
+    return hd
+
+def calculate_ji(ref_img, reg_img):
+    """
+    Calculate the JI metric between two images.
+    """
+    ref_img = ref_img[:, :, 0]
+    reg_img = reg_img[:ref_img.shape[0], :ref_img.shape[1]]
+
+
+    ji = np.sum(np.logical_and(ref_img > 0, reg_img > 0)) / np.sum(np.logical_or(ref_img > 0, reg_img > 0))
+    return ji
+
+
+def calculate_mse(image1, image2):
+    """Calculate Mean Squared Error (MSE) between two images."""
+    image1 = image1[:, :, 0]
+    image2 = image2[:image1.shape[0], :image1.shape[1]]
+
+    squared_diff = (image1.astype(np.float64) - image2.astype(np.float64)) ** 2
+    mse = np.mean(squared_diff)
+    return mse
+
+
+def calculate_psnr(image1, image2, max_value=255):
+    """Calculate Peak Signal-to-Noise Ratio (PSNR) between two images."""
+    mse = calculate_mse(image1, image2)
+    if mse == 0:
+        return float("inf")
+    psnr = 10 * np.log10((max_value ** 2) / mse)
+    return psnr
+
+
+
+n1 = calculate_ncc(orig_array, reg_array1)
+n2 =calculate_ncc(orig_array, reg_array2)
+n3 =calculate_ncc(orig_array, reg_array3)
+
+print('NCC', n1, n2, n3)
+
+h1 =calculate_hd(orig_array, reg_array1)
+h2 =calculate_hd(orig_array, reg_array2)
+h3 =calculate_hd(orig_array, reg_array3)
+
+print('HD', h1, h2, h3)
+
+j1 =calculate_ji(orig_array, reg_array1)
+j2 =calculate_ji(orig_array, reg_array2)
+j3 =calculate_ji(orig_array, reg_array3)
+
+print('JI', j1, j2, j3)
+
+m1 =calculate_mutual_information(orig_array, reg_array1)
+m2 =calculate_mutual_information(orig_array, reg_array2)
+m3 =calculate_mutual_information(orig_array, reg_array3)
+
+print('MI', m1, m2, m3)
+
+s1 =calculate_ssim(orig_array, reg_array1)
+s2 =calculate_ssim(orig_array, reg_array2)
+s3 =calculate_ssim(orig_array, reg_array3)
+
+print('SSIM', s1, s2, s3)
+
+p1 =calculate_psnr(orig_array, reg_array1)
+p2 =calculate_psnr(orig_array, reg_array2)
+p3 =calculate_psnr(orig_array, reg_array3)
+
+print('PSNR', p1, p2, p3)
+
+# mse
+mse1 = calculate_mse(orig_array, reg_array1)
+mse2 = calculate_mse(orig_array, reg_array2)
+mse3 = calculate_mse(orig_array, reg_array3)
+
+print('MSE', mse1, mse2, mse3)

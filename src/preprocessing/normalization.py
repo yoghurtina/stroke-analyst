@@ -131,3 +131,23 @@ for filename in os.listdir(path1):
         result = equalize_this(img_path, with_plot=False, gray_scale=True)
         output_img_path = os.path.join(output_folder_path1, filename)
         cv2.imwrite(output_img_path, result)
+
+
+import os
+
+def rename_images(output_folder_path1):
+    files = os.listdir(output_folder_path1)
+    count = 1
+
+    for file in files:
+        if file.endswith(".png"):
+            old_name = os.path.join(output_folder_path1, file)
+            new_name = os.path.join(output_folder_path1, str(count) + ".jpg")
+            os.rename(old_name, new_name)
+            count += 1
+
+# Provide the directory path where your images are located
+directory_path = "/home/ioanna/Documents/Thesis/raw_data/atlas_norm"
+
+
+rename_images(directory_path)

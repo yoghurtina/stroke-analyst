@@ -29,8 +29,8 @@ def segmentation(image_file):
     cv2.drawContours(mask, [largest_contour], 0, (255, 255, 255), -1)
 
     # Apply erosion to remove noise in outer edges
-    kernel = np.ones((5,5),np.uint8)
-    # mask = cv2.morphologyEx(mask, cv2.MORPH_ERODE, kernel)
+    kernel = np.ones((7,7),np.uint8)
+    mask = cv2.morphologyEx(mask, cv2.MORPH_ERODE, kernel)
     mask = cv2.erode(mask, kernel, iterations=1)
 
     # Apply the mask to the original image
@@ -40,34 +40,66 @@ def segmentation(image_file):
     return result, mask
 
 
-# # Load the image
-# path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas"
+# Load the image
+path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas"
 
-# # Set the path to the folder where you want to save the processed images
-# output_folder_path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas_seg"
-# output_folder_path2 = "/home/ioanna/Documents/Thesis/raw_data/atlas_mask"
+# Set the path to the folder where you want to save the processed images
+output_folder_path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas_seg"
+output_folder_path2 = "/home/ioanna/Documents/Thesis/raw_data/atlas_mask"
 
 
-# # Create the output folder if it doesn't exist
-# if not os.path.exists(output_folder_path1):
-#     os.makedirs(output_folder_path1)
+# Create the output folder if it doesn't exist
+if not os.path.exists(output_folder_path1):
+    os.makedirs(output_folder_path1)
 
-# if not os.path.exists(output_folder_path2):
-#     os.makedirs(output_folder_path2)
+if not os.path.exists(output_folder_path2):
+    os.makedirs(output_folder_path2)
 
-# # Loop through all the files in the folder
-# for filename in os.listdir(path1):
-#     # print(filename)
-#     # Check if the file is an image
-#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-#         # print("his")
-#         # Load the image
-#         img_path = os.path.join(path1, filename)
-#         result, mask = segmentation(img_path)
-#         output_img_path = os.path.join(output_folder_path1, filename)
-#         output_mask_path = os.path.join(output_folder_path2, "mask_" + filename)
-#         cv2.imwrite(output_img_path, result)
-#         cv2.imwrite(output_mask_path, mask)
+# Loop through all the files in the folder
+for filename in os.listdir(path1):
+    
+    # print(filename)
+    # Check if the file is an image
+    if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
+        # print("his")
+        # Load the image
+        img_path = os.path.join(path1, filename)
+        result, mask = segmentation(img_path)
+        output_img_path = os.path.join(output_folder_path1, filename)
+        output_mask_path = os.path.join(output_folder_path2, "mask_" + filename)
+        cv2.imwrite(output_img_path, result)
+        cv2.imwrite(output_mask_path, mask)
 
-# # result, mask = segmentation("fixed_hem.png")
-# # cv2.imwrite("fixed_hem.jpg", result)
+# result, mask = segmentation("fixed_hem.png")
+# cv2.imwrite("fixed_hem.jpg", result)
+
+import os
+
+def rename_images(output_folder_path1):
+    files = os.listdir(output_folder_path1)
+    count = 1
+
+    for file in files:
+        if file.endswith(".png"):
+            old_name = os.path.join(output_folder_path1, file)
+            new_name = os.path.join(output_folder_path1, str(count) + ".jpg")
+            os.rename(old_name, new_name)
+            count += 1
+
+def rename_image_masks(output_folder_path1):
+    files = os.listdir(output_folder_path1)
+    count = 1
+
+    for file in files:
+        if file.endswith(".png"):
+            old_name = os.path.join(output_folder_path1, file)
+            new_name = os.path.join(output_folder_path1, "mask_"+str(count) + ".jpg")
+            os.rename(old_name, new_name)
+            count += 1
+
+
+# Provide the directory path where your images are located
+directory_path = output_folder_path1
+
+rename_images(directory_path)
+rename_image_masks(output_folder_path2)

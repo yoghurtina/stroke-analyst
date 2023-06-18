@@ -25,7 +25,6 @@ def seg_anything(image, bbox):
     im_array = np.asarray(image_bgr)
 
     uploaded = Image.open(image)
-    uploaded.save("original.jpg")
 
     im_width, im_height = im_array.shape[0], im_array.shape[1]
 

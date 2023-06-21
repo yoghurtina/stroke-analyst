@@ -33,13 +33,13 @@ def extract_allen_slice(index):
 
     return slice
 
-# import matplotlib.pyplot as plt
-# print(extract_allen_slice(308))
-# array = extract_allen_slice(308)
-# print(type(array))
+import matplotlib.pyplot as plt
+print(extract_allen_slice(308))
+array = extract_allen_slice(308)
+print(type(array))
 
-# plt.imshow(array, cmap='gray')
-# plt.show()
+plt.imshow(array, cmap='gray')
+plt.show()
 
 def extract_allen_mask(index):
     size = [528, 320, 456]
@@ -60,13 +60,13 @@ def extract_allen_mask(index):
     
     return slice
 
-# import matplotlib.pyplot as plt
-# print(extract_allen_mask(308))
-# array = extract_allen_mask(308)
-# print(type(array))
+import matplotlib.pyplot as plt
+print(extract_allen_mask(308))
+array = extract_allen_mask(308)
+print(type(array))
 
-# plt.imshow(array)
-# plt.show()
+plt.imshow(array, cmap='coolwarm')
+plt.show()
 
 def find_region_name(json_data, label):
     # Recursive function to search in a JSON structure for the 'id' value and return the corresponding 'name'
@@ -106,26 +106,41 @@ def json_find(json_data, id_val):
 
     return None
 import pandas as pd
+import cv2
 
 def region_naming(json_data, allen_masks, bregma_distance, lesion_AS, save_dir):
     # Extract original Allen mask and keep unique
     ori_allen_labels = extract_allen_mask(find_coordinates(bregma_distance))
-    print(ori_allen_labels)
-    lesion_AS = np.array(lesion_AS)
     ori_allen_labels = np.array(ori_allen_labels)
-    print(ori_allen_labels.shape)
-    
+    # ori_allen_labels = cv2.resize(ori_allen_labels, (600, 600))
+
+    lesion_AS = np.array(lesion_AS)
+
     allen_masks = pd.read_csv(allen_masks)
     allen_masks = np.array(allen_masks)
-    print(allen_masks.shape)
-    print(lesion_AS.shape)
+
+    print("allen",ori_allen_labels.shape)
+    print("lesion",lesion_AS.shape)
+    plt.imshow(ori_allen_labels)
+    plt.show()
     
-    lesion_AS = np.resize(lesion_AS, allen_masks.shape)
+    target_height, target_width = ori_allen_labels.shape
+    print(target_height, target_width)
+    print(target_height, target_width)
+    lesion_AS = cv2.resize(lesion_AS, (target_width, target_height))
+    # lesion_AS = lesion_AS[:, :, 0]
+
+    # lesion_AS = np.resize(lesion_AS, allen_masks.shape)
+    # print(allen_masks.shape)
+    print(lesion_AS.shape)
+    plt.imshow(lesion_AS)
+    plt.show()
+    cv2.imwrite("lesion_AS.png", lesion_AS)
     # print(lesion_AS_resized.shape)
-    if allen_masks.shape == lesion_AS.shape:
+    if ori_allen_labels.shape == lesion_AS.shape:
         
         # Filter Allen mask using lesion prediction
-        affected_regions_mask = allen_masks * lesion_AS
+        affected_regions_mask = ori_allen_labels * lesion_AS
 
         # Acquire interpolated points indices
         int_indices = np.isin(affected_regions_mask, ori_allen_labels)
@@ -158,8 +173,8 @@ with open('/home/ioanna/Documents/Thesis/raw_data/acronyms.json') as file:
     # json_data = {item['id']: item for item in json_data}
 print(json_data)
 
-lesion_AS = Image.open('/home/ioanna/Documents/Thesis/training_data/Output pictures/sm_13.jpg')
+lesion_AS = Image.open('/home/ioanna/Documents/Thesis/src/module/mask3_hem1.jpg')
+allen_masks = "/home/ioanna/Documents/Thesis/raw_data/allen_masks/-2.7.csv"
 
-
-result = region_naming(json_data, '2-68.csv',-2.68e-3, lesion_AS, "/home/ioanna/Documents/Thesis/src/module")
+result = region_naming(json_data, allen_masks,-2.68e-3, lesion_AS, "/home/ioanna/Documents/Thesis/src/module")
 print(result)

@@ -9,6 +9,7 @@ import SimpleITK as sitk
 from module.reg_preprocessing import convert_image_nii, dpi_fixing, convert_to_grayscale, convert_to_jpg
 from module.registration import rigid, non_rigid, affine
 from module.normalization import equalize_this
+import cv2
 
 col1, col2 = st.columns(2)
 
@@ -18,13 +19,21 @@ def save_uploadedfile(uploadedfile, path):
     return True
 
 
+
 def reg_results():
 
-    uploaded_in_previous_step = Image.open("src/temp/detection/equalized_section.jpg")
+    uploaded_in_previous_step = Image.open("src/temp/alignment/aligned_section.jpg")
+    equalized = equalize_this("src/temp/alignment/aligned_section.jpg")
+    cv2.imwrite("src/temp/registration/equalized_section.jpg", equalized)
+    uploaded_in_previous_step = Image.open("src/temp/registration/equalized_section.jpg")
+    uploaded_array = np.array(uploaded_in_previous_step)
+    img_height, img_width = uploaded_array.shape
+
+    
     selected_atlas_section = Image.open("src/temp/mapping/mapped_allen_section.jpg")
     st.image([uploaded_in_previous_step, selected_atlas_section], caption=["Moving Image", "Fixed Image"], width=300)
 
-    moving_image_path = "src/temp/detection/equalized_section.jpg"
+    moving_image_path = "src/temp/registration/equalized_section.jpg"
     fixed_image_path =  "src/temp/mapping/mapped_allen_section.jpg"
 
     convert_image_nii(moving_image_path, "src/temp/registration/moving.nii")
@@ -55,7 +64,7 @@ def reg_results():
             Image.open("src/temp/registration/non_rigid.jpg")], width=300, caption=["Rigid Registration", "Affine Registration", "Non-rigid Registration"])
 
 
-st.header("Registration Results (Whole section and stroked hemisphere)")
+st.header("Registration Results")
 
 def hem_reg_results():
     moving_hem_path = "src/temp/cropper/stroked_hemisphere.jpg"

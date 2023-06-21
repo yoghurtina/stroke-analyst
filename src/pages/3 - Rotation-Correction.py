@@ -7,7 +7,7 @@ from module.alignment import alignment, is_aligned
 from PIL import Image
 import io
 
-st.header("Section Alignment to Axis")
+st.header("Rotation Correction of the section")
 
 def rotate_image(image, degrees):
     """

@@ -7,7 +7,7 @@ import os
 from streamlit_drawable_canvas import st_canvas
 from PIL import Image
 
-st.header("Section Background Segmentation")
+st.header("Background Segmentation of the section")
 
 def load_image(image_file):
     img = Image.open(image_file)
@@ -37,7 +37,7 @@ def main():
         if 'button' not in st.session_state:
             st.session_state['button'] = 'value'
 
-        if st.button('Segmentate image', key = "value"):
+        if st.button('Segment image', key = "value"):
 
             seg, mask = segmentation(uploaded_file)
             segmentated = st.image(seg,width=300, caption="Background Segmented Section")

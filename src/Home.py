@@ -24,10 +24,15 @@ __Under Construction__
 # """
 """
 # Steps to follow:
-1. Mapping a coronary section with it's corresponding Allen Atlas section
-2. Segmentation of the background of the section
-3. Correction of the rotation of the coronary section (if needed)
-4. Registration results of the uploaded section and it's corresponding atlas section
-5. Detection of the stroke lesion as well as of the ischemic and healthy hemispheres and visualization of the extracted masks.
-6. Anatomical naming of the stroked regions gained from the lesion mask
+
+The analysis process encompasses the following tasks:
+
+1. Mapping: Establishing the spatial correspondence between a coronary section and its corresponding section in the Allen Atlas.
+2. Background Segmentation: Separating the background elements from the coronary section to obtain a clean representation.
+3. Rotation Correction: Rectifying the rotation of the coronary section, if required, to align it properly.
+4. Registration: Performing registration between the uploaded coronary section and the corresponding atlas section, assessing the quality of alignment.
+5. Stroke Lesion Detection: Utilizing advanced algorithms, identifying the stroke lesion within the coronary section and visualizing the extracted masks.
+6. Anatomical Annotation: Determining the affected anatomical regions by associating the identified stroke lesion with the relevant anatomical structures 
+using the generated lesion mask. Furthermore, volumetric data of the stroke can be computed and analyzed.
 """
+

@@ -108,7 +108,7 @@ def json_find(json_data, id_val):
 import pandas as pd
 import cv2
 
-def region_naming(json_data, allen_masks, bregma_distance, lesion_AS, save_dir):
+def region_naming(json_data, bregma_distance, lesion_AS, save_dir):
     # Extract original Allen mask and keep unique
     ori_allen_labels = extract_allen_mask(find_coordinates(bregma_distance))
     ori_allen_labels = np.array(ori_allen_labels)
@@ -116,26 +116,20 @@ def region_naming(json_data, allen_masks, bregma_distance, lesion_AS, save_dir):
 
     lesion_AS = np.array(lesion_AS)
 
-    allen_masks = pd.read_csv(allen_masks)
-    allen_masks = np.array(allen_masks)
-
-    print("allen",ori_allen_labels.shape)
-    print("lesion",lesion_AS.shape)
-    plt.imshow(ori_allen_labels)
-    plt.show()
+    # print("allen",ori_allen_labels.shape)
+    # print("lesion",lesion_AS.shape)
+    # plt.imshow(ori_allen_labels)
+    # plt.show()
     
     target_height, target_width = ori_allen_labels.shape
     print(target_height, target_width)
     print(target_height, target_width)
     lesion_AS = cv2.resize(lesion_AS, (target_width, target_height))
-    # lesion_AS = lesion_AS[:, :, 0]
 
-    # lesion_AS = np.resize(lesion_AS, allen_masks.shape)
-    # print(allen_masks.shape)
-    print(lesion_AS.shape)
-    plt.imshow(lesion_AS)
-    plt.show()
-    cv2.imwrite("lesion_AS.png", lesion_AS)
+    # print(lesion_AS.shape)
+    # plt.imshow(lesion_AS)
+    # plt.show()
+    # cv2.imwrite("lesion_AS.png", lesion_AS)
     # print(lesion_AS_resized.shape)
     if ori_allen_labels.shape == lesion_AS.shape:
         
@@ -167,14 +161,14 @@ def region_naming(json_data, allen_masks, bregma_distance, lesion_AS, save_dir):
     return None
 
 
-# Load JSON data from file and convert to dictionary
-with open('/home/ioanna/Documents/Thesis/raw_data/acronyms.json') as file:
-    json_data = json.load(file)
-    # json_data = {item['id']: item for item in json_data}
-print(json_data)
+# # Load JSON data from file and convert to dictionary
+# with open('/raw_data/acronyms.json') as file:
+#     json_data = json.load(file)
+#     # json_data = {item['id']: item for item in json_data}
+# print(json_data)
 
-lesion_AS = Image.open('/home/ioanna/Documents/Thesis/src/module/mask3_hem1.jpg')
-allen_masks = "/home/ioanna/Documents/Thesis/raw_data/allen_masks/-2.7.csv"
-
-result = region_naming(json_data, allen_masks,-2.68e-3, lesion_AS, "/home/ioanna/Documents/Thesis/src/module")
-print(result)
+# lesion_AS = Image.open('/src/module/mask3_hem1.jpg')
+# allen_masks = "/raw_data/allen_masks/-2.7.csv"
+# 
+# result = region_naming(json_data, allen_masks,-2.68e-3, lesion_AS, "/home/ioanna/Documents/Thesis/src/module")
+# print(result)

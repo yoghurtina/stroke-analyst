@@ -42,8 +42,8 @@ def reg_results():
     moving_nii_path = "src/temp/registration/moving.nii"
     fixed_nii_path =  "src/temp/registration/fixed.nii"
 
-    resampled_moving = dpi_fixing(moving_nii_path)
-    resampled_fixed = dpi_fixing(fixed_nii_path)
+    resampled_moving = dpi_fixing(moving_nii_path, dpi=[300, 300])
+    resampled_fixed = dpi_fixing(fixed_nii_path, dpi=[300, 300])
 
     sitk.WriteImage(resampled_moving, "src/temp/registration/resampled_moving.nii" )
     sitk.WriteImage(resampled_fixed,  "src/temp/registration/resampled_fixed.nii")
@@ -76,8 +76,8 @@ def hem_reg_results():
     moving_nii_path = "src/temp/registration/moving_hem.nii"
     fixed_nii_path =  "src/temp/registration/fixed_hem.nii"
 
-    resampled_moving = dpi_fixing(moving_nii_path, dpi=[600,600])
-    resampled_fixed = dpi_fixing(fixed_nii_path, dpi=[600,600])
+    resampled_moving = dpi_fixing(moving_nii_path, dpi=[300,300])
+    resampled_fixed = dpi_fixing(fixed_nii_path, dpi=[300,300])
 
     sitk.WriteImage(resampled_moving, "src/temp/registration/resampled_moving_hem.nii" )
     sitk.WriteImage(resampled_fixed,  "src/temp/registration/resampled_fixed_hem.nii")
@@ -102,3 +102,14 @@ def hem_reg_results():
 
 reg_results()
 hem_reg_results()
+
+
+def rotate_image(image):
+    image= Image.open(image)
+    image_rot = image.rotate(-90)
+    flipped = np.fliplr(np.array(image_rot))
+    image_rot = Image.fromarray(flipped)
+    return image_rot
+
+rotated_image = rotate_image("src/temp/registration/non_rigid.jpg")
+rotated_image.save("src/temp/registration/non_rigid_rot.jpg")

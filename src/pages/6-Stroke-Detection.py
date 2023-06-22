@@ -31,31 +31,12 @@ def delete_foldercontents(folder_path):
 
 import cv2
 
-# uploaded_in_previous_step = Image.open("src/temp/alignment/aligned_section.jpg")
-# equalized = equalize_this("src/temp/alignment/aligned_section.jpg")
-# cv2.imwrite("src/temp/detection/equalized_section.jpg", equalized)
+uploaded_in_previous_step = Image.open("src/temp/registration/non_rigid_rot.jpg")
 
-# uploaded_in_previous_step = Image.open("src/temp/detection/equalized_section.jpg")
-# uploaded_array = np.array(uploaded_in_previous_step)
-# img_height, img_width = uploaded_array.shape
-
-uploaded_in_previous_step = Image.open("src/temp/registration/non_rigid.jpg")
 uploaded_array = np.array(uploaded_in_previous_step)
 img_height, img_width = uploaded_array.shape
 
 
-# equalized = equalize_this("/home/ioanna/Documents/Thesis/src/temp/alignment/aligned_section.jpg")
-# equalized_pil_img  = Image.fromarray(equalized)
-# byte_io = BytesIO()
-# equalized_pil_img.save(byte_io, format='JPEG')  # Adjust format as needed
-# # Save the bytes-like object to a file
-# save_uploadedfile(byte_io,"/home/ioanna/Documents/Thesis/src/temp/detection/equalized_section.jpg")
-# print(type(uploaded_in_previous_step))
-
-
-# print(img_height, img_width)
-# image = st.image(uploaded_in_previous_step)
-# Specify canvas parameters in application
 drawing_mode = st.sidebar.selectbox(
     "Drawing tool:", ("rect", "circle", "transform", "polygon")
 )
@@ -104,7 +85,7 @@ if uploaded_in_previous_step:
             bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
             print(bbox_coords)
 
-            seg_results = seg_anything("src/temp/registration/non_rigid.jpg", bbox_coords)
+            seg_results = seg_anything("src/temp/registration/non_rigid_rot.jpg", bbox_coords)
 
             if seg_results:
                 image_hem1 = Image.open('src/temp/detection/source_image_hem1.jpg')
@@ -131,3 +112,6 @@ if uploaded_in_previous_step:
                 st.image([mask1_hem2, mask2_hem2, mask3_hem2], width=200)
 
                 # delete_foldercontents("/home/ioanna/Documents/Thesis/src/temp")
+
+
+# ar = (rotate_image("src/temp/registration/non_rigid.jpg"))

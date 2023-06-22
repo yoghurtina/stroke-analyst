@@ -20,8 +20,8 @@ with open('/home/ioanna/Documents/Thesis/raw_data/acronyms.json') as file:
     # json_data = {item['id']: item for item in json_data}
 # print(json_data)
 
-lesion_AS = Image.open('/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem1.jpg')
-affected_regions = region_naming(json_data, -2.68e-3, lesion_AS, '/home/ioanna/Documents/Thesis/src/temp/anatomy')
+lesion_AS = Image.open('src/temp/detection/mask3_hem1.jpg')
+affected_regions = region_naming(json_data, -2.68e-3, lesion_AS, 'src/temp/anatomy')
 
 print(type(affected_regions))
 
@@ -29,13 +29,13 @@ print(type(affected_regions))
 df = pd.DataFrame(affected_regions, columns=['Affected Regions'])
 st.write(df)
 
-vol_data = compute_volumetric_data("/home/ioanna/Documents/Thesis/src/temp/segmentation/mask_segmented_image.jpg","/home/ioanna/Documents/Thesis/src/temp/detection/mask3_hem1.jpg",\
-                         "/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem1.jpg", "/home/ioanna/Documents/Thesis/src/temp/detection/mask1_hem2.jpg", "/home/ioanna/Documents/Thesis/src/temp")
+vol_data = compute_volumetric_data("src/temp/segmentation/mask_segmented_image.jpg","src/temp/detection/mask3_hem1.jpg",\
+                         "src/temp/detection/mask1_hem1.jpg", "src/temp/detection/mask1_hem2.jpg", "src/temp")
 
 st.write("Volumetric data computed!")
 
-vol_data = pd.read_csv("/home/ioanna/Documents/Thesis/src/temp/results.csv")
-st.write(vol_data)
+vol_data = pd.read_csv("src/temp/results.csv")
+# st.write(vol_data)
 
 df2 =pd.DataFrame(vol_data)
 df2 = df2.transpose()

@@ -80,47 +80,10 @@ def equalize_this(image_file, with_plot=False, gray_scale=True, bins=256):
         return True
     return image_eq
 
-# img = equalize_this(image_file='test2.jpg', with_plot=True)
-# path = "/home/ioanna/Documents/Thesis/training/segmented"
-# path1 = "/home/ioanna/Documents/Thesis/training/stroke_extracted"
-# path2 = "/home/ioanna/Documents/Thesis/raw_data/coordinated_to_allen"
 
+path1 = "/home/ioanna/Documents/Training Data/Anastasia/output stroke"
 
-# output_folder_path = "/home/ioanna/Documents/Thesis/training/normalized"
-# output_folder_path1 = "/home/ioanna/Documents/Thesis/training/stroke_extracted_normalized"
-# output_folder_path2 = "/home/ioanna/Documents/Thesis/results/preprocessing/normalization"
-
-# if not os.path.exists(output_folder_path):
-#     os.makedirs(output_folder_path)
-
-# if not os.path.exists(output_folder_path1):
-#     os.makedirs(output_folder_path1)
-
-# if not os.path.exists(output_folder_path2):
-#     os.makedirs(output_folder_path2)
-
-# for filename in os.listdir(path):
-#     # Check if the file is an image
-#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-#         # Load the image
-#         img_path = os.path.join(path, filename)
-#         result = equalize_this(img_path, with_plot=False, gray_scale=True)
-#         output_img_path = os.path.join(output_folder_path, filename)
-#         cv2.imwrite(output_img_path, result)
-
-
-# for filename in os.listdir(path2):
-#     # Check if the file is an image
-#     if filename.endswith(".jpg") or filename.endswith(".png") or filename.endswith(".tiff") or filename.endswith(".JPG"):
-#         # Load the image
-#         print(filename)
-#         img_path = os.path.join(path2, filename)
-#         result = equalize_this(img_path, with_plot=False, gray_scale=True)
-#         output_img_path = os.path.join(output_folder_path2, filename)
-#         cv2.imwrite(output_img_path, result)
-
-path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas_seg"
-output_folder_path1 = "/home/ioanna/Documents/Thesis/raw_data/atlas_norm"
+output_folder_path1 = "/home/ioanna/Documents/Training Data/Anastasia/output stroke equalized"
 
 
 for filename in os.listdir(path1):
@@ -133,21 +96,21 @@ for filename in os.listdir(path1):
         cv2.imwrite(output_img_path, result)
 
 
-import os
+# import os
 
-def rename_images(output_folder_path1):
-    files = os.listdir(output_folder_path1)
-    count = 1
+# def rename_images(output_folder_path1):
+#     files = os.listdir(output_folder_path1)
+#     count = 1
 
-    for file in files:
-        if file.endswith(".png"):
-            old_name = os.path.join(output_folder_path1, file)
-            new_name = os.path.join(output_folder_path1, str(count) + ".jpg")
-            os.rename(old_name, new_name)
-            count += 1
+#     for file in files:
+#         if file.endswith(".png"):
+#             old_name = os.path.join(output_folder_path1, file)
+#             new_name = os.path.join(output_folder_path1, str(count) + ".jpg")
+#             os.rename(old_name, new_name)
+#             count += 1
 
-# Provide the directory path where your images are located
-directory_path = "/home/ioanna/Documents/Thesis/raw_data/atlas_norm"
+# # Provide the directory path where your images are located
+# directory_path = "/home/ioanna/Documents/Thesis/raw_data/atlas_norm"
 
 
-rename_images(directory_path)
+# rename_images(directory_path)

@@ -29,12 +29,11 @@ def delete_foldercontents(folder_path):
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-import cv2
+uploaded_in_previous_step = Image.open("src/temp/alignment/equalized_aligned_section.jpg")
 
-uploaded_in_previous_step = Image.open("src/temp/registration/non_rigid_rot.jpg")
 
 uploaded_array = np.array(uploaded_in_previous_step)
-img_height, img_width = uploaded_array.shape
+img_height, img_width= uploaded_array.shape
 
 
 drawing_mode = st.sidebar.selectbox(
@@ -48,9 +47,6 @@ stroke_color = st.sidebar.color_picker("Stroke color hex: ")
 bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
 
 realtime_update = st.sidebar.checkbox("Update in realtime", True)
-
-
-# bg_image1 = st.sidebar.file_uploader("Background image:", type=["png", "jpg", "jpeg"])
 
 # Open the uploaded image with PIL
 if uploaded_in_previous_step:
@@ -85,7 +81,9 @@ if uploaded_in_previous_step:
             bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
             print(bbox_coords)
 
-            seg_results = seg_anything("src/temp/registration/non_rigid_rot.jpg", bbox_coords)
+            # seg_results = seg_anything("src/temp/registration/non_rigid_rot.jpg", bbox_coords)
+
+            seg_results = seg_anything("src/temp/alignment/aligned_section.jpg", bbox_coords)
 
             if seg_results:
                 image_hem1 = Image.open('src/temp/detection/source_image_hem1.jpg')

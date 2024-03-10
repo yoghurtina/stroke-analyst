@@ -1,54 +1,91 @@
-import numpy as np
-import streamlit as st
-from module.segmentation import segmentation
-from io import BytesIO
-from pathlib import Path
-import os
-from streamlit_drawable_canvas import st_canvas
+import pandas as pd
 from PIL import Image
+import streamlit as st
+from streamlit_drawable_canvas import st_canvas
+import numpy as np
+from matplotlib.patches import Polygon
+from module.detection import seg_anything, seg_anything_bgs
+from module.normalization import equalize_this
+import os, shutil
+from io import BytesIO
+import cv2
 
-st.header("Background Segmentation of the section")
+st.header("Background Segmentation")
+col1,col2 = st.columns(2)
 
-def load_image(image_file):
-    img = Image.open(image_file)
-    return img
-
-
-def save_uploadedfile(uploadedfile):
-    with open(os.path.join("temp/segmentation","background_segmented_section.jpg"),"wb") as f:
+def save_uploadedfile(uploadedfile, path):
+    with open(os.path.join(path),"wb") as f:
         f.write(uploadedfile.getbuffer())
-    return st.success("Saved File:{}".format("background_segmented_section"))
+    return st.success("Saved uploaded image to a temporary folder")
+
+def delete_foldercontents(folder_path):
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)
+        except Exception as e:
+            print('Failed to delete %s. Reason: %s' % (file_path, e))
+
 
 uploaded_in_previous_step = Image.open("src/temp/mapping/uploaded_section.jpg")
-selected_allen_section =    Image.open("src/temp/mapping/mapped_allen_section.jpg") 
+uploaded_array = np.array(uploaded_in_previous_step)
+img_height, img_width, _= uploaded_array.shape
 
-st.image([uploaded_in_previous_step, selected_allen_section], width=300, caption=["Previously Uploaded Section", "Previously Mapped Allen Section"])
 
-def main():
-    uploaded_file = st.file_uploader("Upload one mouse brain section", type=["jpg", "jpeg", "png"], accept_multiple_files=False)
-    # uploaded_file = Image.open("/home/ioanna/Documents/Thesis/src/temp/mapping/uploaded_section.jpg")
+drawing_mode = st.sidebar.selectbox(
+    "Drawing tool:", ("rect", "circle", "transform", "polygon")
+)
 
-    # uploaded_file = uploaded_in_previous_step
-    if uploaded_file:
-        # image = Image.open(uploaded_file)
+stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
+if drawing_mode == 'point':
+    point_display_radius = st.sidebar.slider("Point display radius: ", 1, 25, 3)
+stroke_color = st.sidebar.color_picker("Stroke color hex: ")
+bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
 
-        image = st.image(uploaded_file,width=300, caption="Uploaded Section")
-            # Initialization
-        if 'button' not in st.session_state:
-            st.session_state['button'] = 'value'
+realtime_update = st.sidebar.checkbox("Update in realtime", True)
 
-        if st.button('Segment image', key = "value"):
+# Open the uploaded image with PIL
+if uploaded_in_previous_step:
+    # Draw the canvas
+    canvas_result = st_canvas(fill_color="rgba(255, 165, 0, 0.3)",  # Fixed fill color with some opacity
+        stroke_width=stroke_width,
+        stroke_color=stroke_color,
+        background_color=bg_color,
+        background_image=uploaded_in_previous_step,
+        update_streamlit=realtime_update,
+        height=img_height,
+        width=img_width,
+        drawing_mode=drawing_mode,
+        key="canvas",
+    )
+    if canvas_result.image_data is not None:
+        st.image(canvas_result.image_data)
 
-            seg, mask = segmentation(uploaded_file)
-            segmentated = st.image(seg,width=300, caption="Background Segmented Section")
-            mask_ = st.image(mask,width=300, caption="Background Segmented Mask")
+    if canvas_result.json_data is not None:
+        # st.write((canvas_result.json_data['objects']))
+        objects = pd.json_normalize(canvas_result.json_data["objects"]) # need to convert obj to str because PyArrow
+        for col in objects.select_dtypes(include=['object']).columns:
+            objects[col] = objects[col].astype("str")
+        st.dataframe(objects)
+
+        objects = canvas_result.json_data['objects']
+        bbox_array = np.array([[obj['left'], obj['top'], obj['width'], obj['height']] for obj in objects])
+        print(bbox_array)
+
+
+        if bbox_array is not None:
+            bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
+            print(bbox_coords)
+
+            seg_results = seg_anything_bgs("src/temp/mapping/uploaded_section.jpg", bbox_coords)
+
+            if seg_results:
+                seg_image = Image.open('src/temp/segmentation/segmented_image.jpg')
+                seg_mask = Image.open('src/temp/segmentation/mask_bgs.jpg')
             
-            # img = load_image(uploaded_file)
-            # save_uploadedfile(uploaded_file)
-            segmented_pil_image = Image.fromarray(seg)
-            mask_pil_image = Image.fromarray(mask)
-            segmented_pil_image.save("src/temp/segmentation/background_segmented_image.jpg")
-            mask_pil_image.save("src/temp/segmentation/mask_segmented_image.jpg")
+                st.image([seg_image, seg_mask], width=300)
+                # delete_foldercontents("/home/ioanna/Documents/Thesis/src/temp")
 
-if __name__ == "__main__":
-    main()

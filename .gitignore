@@ -11,4 +11,5 @@ elastix.log
 original.jpg
 affected_regions.txt
 sm_8.jpg
-scripts
+src/scripts
+src/training

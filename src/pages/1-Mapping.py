@@ -41,32 +41,19 @@ with col1:
         image.save("src/temp/mapping/uploaded_section.jpg")
 
 with col2:
-    folder_path = 'raw_data/atlas_norm/'
-
-    # Read photos from the local folder
+    folder_path = 'raw_data/atlas/'
     photos = read_photos_from_folder(folder_path)
 
-    # Display the photos in a carousel using Streamlit
     if len(photos) > 0:
-        carousel_index = st.slider("Choose corresponding atlas section", 0, len(photos)-1, 1)
-        image = st.image(photos[carousel_index], use_column_width=True)
-        
-        # if "rotate_slider" not in st.session_state:
-        #     st.session_state["rotate_slider"] = 0
-        # rotation_degrees = st.number_input('Degrees to rotate the image:', min_value=-360, max_value=360, value=st.session_state["rotate_slider"], key="rotate_slider")
+        carousel_index = st.slider("Choose corresponding atlas section", 1, len(photos)-1, 1)
+        selected_image_path = photos[carousel_index]
+        image = st.image(selected_image_path, use_column_width=True)
 
-        selected = image_select(
-            label="Select corresponding atlas section",
-            images=photos,
-        )
-        st.write(str(selected))
-        if selected:
-            print(type(selected))
-            selected = Image.open(selected).convert("RGB")
+        # Button for confirming the selection of the currently displayed image
+        if st.button('Select this Atlas Section'):
+            # For example, saving the selected image path or performing further operations
+            selected = Image.open(selected_image_path).convert("RGB")
             selected.save("src/temp/mapping/mapped_allen_section.jpg")
-
-
-
+            st.success(f"Selected {os.path.basename(selected_image_path)} as the atlas section.")
     else:
         st.warning("No photos found in the specified folder.")
-

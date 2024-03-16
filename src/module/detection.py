@@ -1,10 +1,10 @@
 import cv2
-import torch
 from segment_anything import sam_model_registry, SamPredictor
 import supervision as sv
 import numpy as np
 import base64
 from PIL import Image
+from scipy.ndimage import gaussian_filter
 
 def encode_image(filepath):
     with open(filepath, 'rb') as f:
@@ -14,12 +14,12 @@ def encode_image(filepath):
     return encoded
 
 def seg_anything(image, bbox):
-    CHECKPOINT_PATH = "src/sam_weights/vit_huge.pth"
+    CHECKPOINT_PATH = "src/sam_weights/sam_vit_b_01ec64.pth"
     # DEVICE = torch.device('cpu')
-    MODEL_TYPE = "vit_h"
+    MODEL_TYPE = "vit_b"
     sam = sam_model_registry[MODEL_TYPE](checkpoint=CHECKPOINT_PATH)
     # sam.to(device=DEVICE)
-    CHECKPOINT_PATH = "src/sam_weights/stroke_huge.pth"
+    # CHECKPOINT_PATH = "src/sam_weights/stroke_huge.pth"
 
     mask_predictor = SamPredictor(sam)
     image_bgr = cv2.imread(image)
@@ -27,7 +27,7 @@ def seg_anything(image, bbox):
 
     uploaded = Image.open(image)
 
-    im_width, im_height = im_array.shape[0], im_array.shape[1]
+    im_width, im_height = im_array.shape[1], im_array.shape[0]
 
     print(im_width, im_height)
     image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
@@ -36,20 +36,23 @@ def seg_anything(image, bbox):
 
     if im_array is not None:
         box = np.array([
-        bbox['x'], 
-        bbox['y'], 
-        bbox['x'] + bbox['width'], 
-        bbox['y'] + bbox['height']
-        ])
-
-        box2 = np.array([
-            bbox['x'] + bbox['width'],
-            bbox['y'] ,
-            im_width, 
+            bbox['x'], 
+            bbox['y'], 
+            bbox['x'] + bbox['width'], 
             bbox['y'] + bbox['height']
         ])
+
+        # Corrected box2 definition
+        box2 = np.array([
+            bbox['x'] + bbox['width'],  # Start from the right side of box1
+            bbox['y'],                   # Same top edge as box1
+            im_width,                    # Right edge of the image
+            bbox['y'] + bbox['height']   # Same bottom edge as box1
+        ])
+
         print(box)
         print(box2)
+
 
         masks_hem1, scores, logits = mask_predictor.predict(
             box=box,
@@ -139,21 +142,13 @@ def seg_anything(image, bbox):
 
     return True
 
-# bbox = {'x': 9, 'y': 40, 'width': 330, 'height': 412}
-# # bbox = {'x': 15, 'y': 16, 'width': 165, 'height': 237}
-
-# # # encode_image('moving.jpg')
-# result = seg_anything('moving.jpg', bbox)
-
-
-
 def seg_anything_bgs(image, bbox):
     CHECKPOINT_PATH = "src/sam_weights/sam_vit_b_01ec64.pth"
     # DEVICE = torch.device('cpu')
     MODEL_TYPE = "vit_b"
     sam = sam_model_registry[MODEL_TYPE](checkpoint=CHECKPOINT_PATH)
     # sam.to(device=DEVICE)
-    CHECKPOINT_PATH = "src/sam_weights/huge_I1065_B8.pth"
+    # CHECKPOINT_PATH = "src/sam_weights/huge_I1065_B8.pth"
 
     mask_predictor = SamPredictor(sam)
     # image = encode_image(image)

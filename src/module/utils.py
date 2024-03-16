@@ -63,7 +63,7 @@ def get_segmented(image_file, mask_file):
 
 
 
-def post_process_mask(binary_mask_path, kernel_size=(5, 5), blur_kernel_size=(1, 1)):
+def post_process_mask(binary_mask_path, kernel_size=(4, 4), blur_kernel_size=(1, 1)):
  
     binary_mask = cv2.imread(binary_mask_path, cv2.IMREAD_GRAYSCALE)
     

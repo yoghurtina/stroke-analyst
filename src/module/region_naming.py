@@ -18,7 +18,7 @@ def extract_allen_slice(index):
     
     size = [528, 320, 456]
     # VOL = 3-D matrix (volume) of atlas Nissl
-    with open('/home/ioanna/Documents/Thesis/raw_data/atlasVolume.raw', 'rb') as file:
+    with open('raw_data/atlasVolume.raw', 'rb') as file:
         VOL = np.fromfile(file, dtype=np.uint8, count=np.prod(size))
     VOL = np.reshape(VOL, size)
 

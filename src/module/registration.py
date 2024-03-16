@@ -13,7 +13,7 @@ def resampler(moving_image, fixed_image):
 
 # # moving_image = resampler(moving_image, fixed_image)
 
-def rigid(fixed_image_path, moving_image_path, output_path="src/temp/registration/rigid_result.nii"):
+def rigid(fixed_image_path, moving_image_path, output_path="results/registration/rigid_result.nii"):
     fixed_image = sitk.ReadImage(fixed_image_path, sitk.sitkFloat32)
     moving_image = sitk.ReadImage(moving_image_path, sitk.sitkFloat32)
 
@@ -32,7 +32,7 @@ def rigid(fixed_image_path, moving_image_path, output_path="src/temp/registratio
     sitk.WriteImage(result_image, output_path)
     return result_image
 
-def affine(fixed_image_path, moving_image_path, output_path="src/temp/registration/affine_result.nii"):
+def affine(fixed_image_path, moving_image_path, output_path="results/registration/affine_result.nii"):
     fixed_image = sitk.ReadImage(fixed_image_path, sitk.sitkFloat32)
     moving_image = sitk.ReadImage(moving_image_path, sitk.sitkFloat32)
 
@@ -51,7 +51,7 @@ def affine(fixed_image_path, moving_image_path, output_path="src/temp/registrati
     sitk.WriteImage(result_image, output_path)
     return result_image
 
-def non_rigid(fixed_image_path, moving_image_path, output_path="src/temp/registration/non_rigid_result.nii"):
+def non_rigid(fixed_image_path, moving_image_path, output_path="results/registration/non_rigid_result.nii"):
     fixed_image = sitk.ReadImage(fixed_image_path, sitk.sitkFloat32)
     moving_image = sitk.ReadImage(moving_image_path, sitk.sitkFloat32)
 
@@ -93,7 +93,7 @@ def non_rigid(fixed_image_path, moving_image_path, output_path="src/temp/registr
     return result_image
 
 
-def advanced_non_rigid(fixed_image_path, moving_image_path, output_path="src/temp/registration/non_rigid_advanced.nii"):
+def advanced_non_rigid(fixed_image_path, moving_image_path, output_path="results/registration/non_rigid_advanced.nii"):
     # Read the fixed and moving images
     fixed_image = sitk.ReadImage(fixed_image_path, sitk.sitkFloat32)
     moving_image = sitk.ReadImage(moving_image_path, sitk.sitkFloat32)

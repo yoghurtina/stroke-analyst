@@ -12,6 +12,9 @@ collections.MutableMapping = collections.abc.MutableMapping
 """
 # Stroke Analyst - Wiki
 __Under Construction__
+
+TODO: 
+    -superpixels
 """
 
 # """
@@ -27,12 +30,12 @@ __Under Construction__
 
 The analysis process encompasses the following tasks:
 
-1. Mapping: Establishing the spatial correspondence between a coronary section and its corresponding section in the Allen Atlas.
-2. Background Segmentation: Separating the background elements from the coronary section to obtain a clean representation.
-3. Rotation Correction: Rectifying the rotation of the coronary section, if required, to align it properly.
-4. Registration: Performing registration between the uploaded coronary section and the corresponding atlas section, assessing the quality of alignment.
-5. Stroke Lesion Detection: Utilizing advanced algorithms, identifying the stroke lesion within the coronary section and visualizing the extracted masks.
-6. Anatomical Annotation: Determining the affected anatomical regions by associating the identified stroke lesion with the relevant anatomical structures 
+1. **Mapping**: Establishing the spatial correspondence between a coronary section and its corresponding section in the Allen Atlas.
+2. **Background Segmentation**: Separating the background elements from the coronary section to obtain a clean representation.
+3. **Rotation Correction**: Rectifying the rotation of the coronary section, if required, to align it properly.
+4. **Registration**: Performing registration between the uploaded coronary section and the corresponding atlas section, assessing the quality of alignment.
+5. **Stroke Lesion Detection**: Utilizing advanced algorithms, identifying the stroke lesion within the coronary section and visualizing the extracted masks.
+6. **Anatomical Annotation**: Determining the affected anatomical regions by associating the identified stroke lesion with the relevant anatomical structures 
 using the generated lesion mask. Furthermore, volumetric data of the stroke can be computed and analyzed.
 """
 

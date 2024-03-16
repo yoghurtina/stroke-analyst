@@ -2,7 +2,7 @@ import cv2
 from sklearn.decomposition import PCA
 import os
 import numpy as np
-from module.segmentation import segmentation
+from module.utils import segmentation_old
 
 def is_aligned(image, threshold=5):
     lines = cv2.HoughLinesP(image, rho=1, theta=np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
@@ -17,8 +17,6 @@ def is_aligned(image, threshold=5):
     return False
 
 def alignment(image, mask):
-    # result, mask = segmentation(image)
-
     if is_aligned(mask):
         return image
 
@@ -73,4 +71,3 @@ def alignment(image, mask):
     rotated = cv2.warpAffine(image, M, (new_cols, new_rows), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_CONSTANT, borderValue=0)
 
     return rotated
-                        

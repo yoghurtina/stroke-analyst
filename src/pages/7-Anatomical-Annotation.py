@@ -5,7 +5,7 @@ from streamlit_drawable_canvas import st_canvas
 import numpy as np
 from matplotlib.patches import Polygon
 from module.detection import seg_anything
-from module.normalization import equalize_this
+from module.utils import equalize_this
 import os, shutil
 from io import BytesIO
 from module.region_naming import region_naming

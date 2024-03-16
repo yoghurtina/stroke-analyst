@@ -5,7 +5,7 @@ from streamlit_drawable_canvas import st_canvas
 import numpy as np
 from matplotlib.patches import Polygon
 from module.detection import seg_anything, seg_anything_bgs
-from module.normalization import equalize_this
+from module.utils import equalize_this
 import os, shutil
 from io import BytesIO
 import cv2
@@ -30,7 +30,7 @@ def delete_foldercontents(folder_path):
             print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 
-uploaded_in_previous_step = Image.open("src/temp/mapping/uploaded_section.jpg")
+uploaded_in_previous_step = Image.open("results/mapping/uploaded_section.jpg")
 uploaded_array = np.array(uploaded_in_previous_step)
 img_height, img_width, _= uploaded_array.shape
 
@@ -64,28 +64,22 @@ if uploaded_in_previous_step:
     if canvas_result.image_data is not None:
         st.image(canvas_result.image_data)
 
-    if canvas_result.json_data is not None:
-        # st.write((canvas_result.json_data['objects']))
-        objects = pd.json_normalize(canvas_result.json_data["objects"]) # need to convert obj to str because PyArrow
-        for col in objects.select_dtypes(include=['object']).columns:
-            objects[col] = objects[col].astype("str")
-        st.dataframe(objects)
-
-        objects = canvas_result.json_data['objects']
-        bbox_array = np.array([[obj['left'], obj['top'], obj['width'], obj['height']] for obj in objects])
-        print(bbox_array)
+    objects = canvas_result.json_data['objects']
+    bbox_array = np.array([[obj['left'], obj['top'], obj['width'], obj['height']] for obj in objects])
 
 
-        if bbox_array is not None:
-            bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
-            print(bbox_coords)
+    if len(bbox_array) > 0:   
+        bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
+        print(bbox_coords)
 
-            seg_results = seg_anything_bgs("src/temp/mapping/uploaded_section.jpg", bbox_coords)
+        seg_results = seg_anything_bgs("results/mapping/uploaded_section.jpg", bbox_coords)
 
-            if seg_results:
-                seg_image = Image.open('src/temp/segmentation/segmented_image.jpg')
-                seg_mask = Image.open('src/temp/segmentation/mask_bgs.jpg')
-            
-                st.image([seg_image, seg_mask], width=300)
-                # delete_foldercontents("/home/ioanna/Documents/Thesis/src/temp")
+        if seg_results:
+            seg_image = Image.open('results/segmentation/segmented_image.jpg')
+            seg_mask = Image.open('results/segmentation/mask_bgs.jpg')
+        
+            st.image([seg_image, seg_mask], width=300)
+            # delete_foldercontents("/home/ioanna/Documents/Thesis/src/temp")
+    else:
+        st.warning('No bounding box drawn. Please draw a bounding box to proceed.')
 

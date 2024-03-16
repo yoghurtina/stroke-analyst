@@ -38,10 +38,10 @@ with col1:
     if uploaded_file:
         image = st.image(uploaded_file,width=300)
         image = Image.open(uploaded_file).convert("RGB")
-        image.save("src/temp/mapping/uploaded_section.jpg")
+        image.save("results/mapping/uploaded_section.jpg")
 
 with col2:
-    folder_path = 'raw_data/atlas/'
+    folder_path = 'raw_data/atlas1/'
     photos = read_photos_from_folder(folder_path)
 
     if len(photos) > 0:
@@ -53,7 +53,7 @@ with col2:
         if st.button('Select this Atlas Section'):
             # For example, saving the selected image path or performing further operations
             selected = Image.open(selected_image_path).convert("RGB")
-            selected.save("src/temp/mapping/mapped_allen_section.jpg")
+            selected.save("results/mapping/mapped_allen_section.jpg")
             st.success(f"Selected {os.path.basename(selected_image_path)} as the atlas section.")
     else:
         st.warning("No photos found in the specified folder.")

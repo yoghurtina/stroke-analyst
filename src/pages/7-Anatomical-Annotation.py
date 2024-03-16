@@ -15,13 +15,13 @@ import json
 st.header("Annatomical Region Annotation and Volumetric Data")
 
 # Load JSON data from file and convert to dictionary
-with open('/home/ioanna/Documents/Thesis/raw_data/acronyms.json') as file:
+with open('raw_data/acronyms.json') as file:
     json_data = json.load(file)
     # json_data = {item['id']: item for item in json_data}
 # print(json_data)
 
-lesion_AS = Image.open('src/temp/detection/mask3_hem1.jpg')
-affected_regions = region_naming(json_data, -2.68e-3, lesion_AS, 'src/temp/anatomy')
+lesion_AS = Image.open('results/detection/mask3_hem1.jpg')
+affected_regions = region_naming(json_data, -2.68e-3, lesion_AS, 'results/anatomy')
 
 print(type(affected_regions))
 
@@ -29,12 +29,12 @@ print(type(affected_regions))
 df = pd.DataFrame(affected_regions, columns=['Affected Regions'])
 st.write(df)
 
-vol_data = compute_volumetric_data("src/temp/segmentation/mask_segmented_image.jpg","src/temp/detection/mask3_hem1.jpg",\
-                         "src/temp/detection/mask1_hem1.jpg", "src/temp/detection/mask1_hem2.jpg", "src/temp")
+vol_data = compute_volumetric_data("results/segmentation/mask_bgs.jpg","results/detection/mask3_hem1.jpg",\
+                         "results/detection/mask1_hem1.jpg", "results/detection/mask1_hem2.jpg", "results")
 
 st.write("Volumetric data computed!")
 
-vol_data = pd.read_csv("src/temp/results.csv")
+vol_data = pd.read_csv("results/results.csv")
 # st.write(vol_data)
 
 df2 =pd.DataFrame(vol_data)

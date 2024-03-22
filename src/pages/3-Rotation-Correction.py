@@ -37,7 +37,7 @@ def main():
 
         aligned = alignment(segmented_image, np.array(mask_from_previous_step))
         aligned = Image.fromarray(aligned)
-        st.image(aligned, caption="Rotated Section",width=300)
+        st.image(aligned, caption="Rotated Section",width=200)
 
         st.write('**In case the section is not accurately aligned to the x axis, please correct the alignment.**')
 
@@ -45,7 +45,7 @@ def main():
         st.write('The current rotation degree is ', rotation_degrees)
         rotated_image = rotate_image(aligned, rotation_degrees)
 
-        st.image(rotated_image, caption="Rotated Image", width=300)
+        st.image(rotated_image, caption="Rotated Image", width=200)
 
         rotated_image_array = np.array(rotated_image)
         rotated_pil_image = Image.fromarray(rotated_image_array)

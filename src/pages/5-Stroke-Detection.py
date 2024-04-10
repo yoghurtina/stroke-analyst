@@ -31,7 +31,54 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-col1, divider, col2 = st.columns([4, 0.1, 6 ])
+
+def resize_image_aspect_ratio(image_path, output_path, max_size=400):
+    # Open the original image
+    image = Image.open(image_path)
+    original_width, original_height = image.size
+    
+    # Calculate the scaling factor
+    scaling_factor = max_size / max(original_width, original_height)
+    
+    # Calculate the new dimensions
+    new_width = int(original_width * scaling_factor)
+    new_height = int(original_height * scaling_factor)
+    
+    # Resize the image
+    resized_image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    
+    # Save the resized image
+    resized_image.save(output_path)
+
+    print(f"Image has been resized to {new_width}x{new_height} and saved successfully!")
+    
+    # Return the resized image and the scaling factors
+    return resized_image, scaling_factor# Example usage
+
+def translate_bbox_to_original(bbox_resized, scaling_factor):
+    """
+    Translate bounding box coordinates from the resized dimensions back to the original image dimensions.
+
+    Parameters:
+    - bbox_resized: The bounding box in the resized image, as a dictionary with keys 'x', 'y', 'width', 'height'.
+    - scaling_factor: The scaling factor used to resize the image.
+
+    Returns:
+    - A dictionary containing the bounding box coordinates translated back to the original image dimensions.
+    """
+    
+    # Translate the bounding box coordinates
+    bbox_original = {
+        'x': bbox_resized['x'] / scaling_factor,
+        'y': bbox_resized['y'] / scaling_factor,
+        'width': bbox_resized['width'] / scaling_factor,
+        'height': bbox_resized['height'] / scaling_factor
+    }
+    
+    return bbox_original
+
+
+col1, divider, col2 = st.columns([3, 0.1, 7 ])
 
 with col1:
     instruction_image_path = "raw_data/stroke_instructions.png"  # Replace with the path to your instruction image
@@ -43,11 +90,14 @@ with divider:
     # This creates a thin, tall column that acts as a divider
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
     st.markdown('<div class="vertical-line"></div>', unsafe_allow_html=True)
-
+    
 with col2:
     st.write('Draw bounding box in the following image.')
 
-    uploaded_in_previous_step = Image.open("results/alignment/equalized_aligned_section.jpg")
+    resized_image, scaling_factor = resize_image_aspect_ratio('results/alignment/equalized_aligned_section.jpg', 'results/alignment/equalized_aligned_section1.jpg')
+    uploaded_in_previous_step = Image.open("results/alignment/equalized_aligned_section1.jpg")
+
+
     # sp = create_superpixel_image("src/temp/alignment/equalized_aligned_section.jpg")
     # # equalized_array = sp.astype('uint8')
     # equalized_pil_image = Image.fromarray(equalized_array)
@@ -55,7 +105,14 @@ with col2:
 
 
     uploaded_array = np.array(uploaded_in_previous_step)
-    img_height, img_width= uploaded_array.shape
+
+    img_height, img_width=    uploaded_array.shape
+    max_canvas_width = 400
+    max_canvas_height = 400
+    scale_factor = min(max_canvas_width / img_width, 1)  # Ensuring the scale factor is not more than 1
+    scaled_width = int(img_width * scale_factor)
+    scaled_height = int(img_height * scale_factor)
+
 
 
     drawing_mode = st.sidebar.selectbox(
@@ -93,6 +150,8 @@ with col2:
         if len(bbox_array) > 0:   
             bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
             print(bbox_coords)
+            bbox_coords = translate_bbox_to_original(bbox_coords, scaling_factor)
+
             # seg_results = seg_anything("src/temp/registration/non_rigid_rot.jpg", bbox_coords)
 
             seg_results = seg_anything("results/alignment/equalized_aligned_section.jpg", bbox_coords)

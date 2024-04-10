@@ -7,6 +7,7 @@ from matplotlib.patches import Polygon
 from module.detection import seg_anything_bgs
 from module.utils import equalize_this
 import os, shutil
+from module.utils import post_process_mask, smooth_mask, save_array_as_image, create_superpixel_image
 import cv2
 
 def save_uploadedfile(uploadedfile, path):
@@ -24,6 +25,58 @@ def delete_foldercontents(folder_path):
                 shutil.rmtree(file_path)
         except Exception as e:
             print('Failed to delete %s. Reason: %s' % (file_path, e))
+
+
+from PIL import Image
+
+def resize_image_aspect_ratio(image_path, output_path, max_size=400):
+    # Open the original image
+    image = Image.open(image_path)
+    original_width, original_height = image.size
+    
+    # Calculate the scaling factor
+    scaling_factor = max_size / max(original_width, original_height)
+    
+    # Calculate the new dimensions
+    new_width = int(original_width * scaling_factor)
+    new_height = int(original_height * scaling_factor)
+    
+    # Resize the image
+    resized_image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
+    
+    # Save the resized image
+    resized_image.save(output_path)
+
+    print(f"Image has been resized to {new_width}x{new_height} and saved successfully!")
+    
+    # Return the resized image and the scaling factors
+    return resized_image, scaling_factor# Example usage
+
+def translate_bbox_to_original(bbox_resized, scaling_factor):
+    """
+    Translate bounding box coordinates from the resized dimensions back to the original image dimensions.
+
+    Parameters:
+    - bbox_resized: The bounding box in the resized image, as a dictionary with keys 'x', 'y', 'width', 'height'.
+    - scaling_factor: The scaling factor used to resize the image.
+
+    Returns:
+    - A dictionary containing the bounding box coordinates translated back to the original image dimensions.
+    """
+    
+    # Translate the bounding box coordinates
+    bbox_original = {
+        'x': bbox_resized['x'] / scaling_factor,
+        'y': bbox_resized['y'] / scaling_factor,
+        'width': bbox_resized['width'] / scaling_factor,
+        'height': bbox_resized['height'] / scaling_factor
+    }
+    
+    return bbox_original
+
+
+
+################################################################################################################################################
 st.header("Background Segmentation")
 
 st.markdown(
@@ -46,14 +99,14 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-col1, divider, col2 = st.columns([4, 0.1, 6 ])
+col1, divider, col2 = st.columns([3, 0.1, 7 ])
 
 with col1:
     instruction_image_path = "raw_data/instructions.png"  # Replace with the path to your instruction image
     instruction_image = Image.open(instruction_image_path)
     st.write('Example usage. Follow the instructions!')
 
-    st.image(instruction_image)  # You can remove the caption if not needed
+    st.image(instruction_image) 
 
 with divider:
     # This creates a thin, tall column that acts as a divider
@@ -63,12 +116,15 @@ with divider:
 with col2:
     st.write('Draw bounding box in the following image.')
 
-    uploaded_in_previous_step = Image.open("results/mapping/uploaded_section.jpg")
+    resized_image, scaling_factor = resize_image_aspect_ratio('results/mapping/uploaded_section.jpg', 'results/mapping/uploaded_section1.jpg')
+    uploaded_in_previous_step = Image.open("results/mapping/uploaded_section1.jpg")
+
+    
     uploaded_array = np.array(uploaded_in_previous_step)
 
     img_height, img_width, _=    uploaded_array.shape
-    max_canvas_width = 300
-    max_canvas_height = 300
+    max_canvas_width = 400
+    max_canvas_height = 400
     # Calculate scaled dimensions
     scale_factor = min(max_canvas_width / img_width, 1)  # Ensuring the scale factor is not more than 1
     scaled_width = int(img_width * scale_factor)
@@ -109,14 +165,27 @@ with col2:
         if len(bbox_array) > 0:   
             bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
             print(bbox_coords)
-
+            bbox_coords = translate_bbox_to_original(bbox_coords, scaling_factor)
             seg_results = seg_anything_bgs("results/mapping/uploaded_section.jpg", bbox_coords)
 
             if seg_results:
                 seg_image = Image.open('results/segmentation/segmented_image.jpg')
                 seg_mask = Image.open('results/segmentation/mask_bgs.jpg')
+                seg_mask2 = Image.open('results/segmentation/mask2_bgs.jpg')
+
+
+                
+                seg_mask = post_process_mask('results/segmentation/mask_bgs.jpg')
+                seg_mask2 = post_process_mask('results/segmentation/mask2_bgs.jpg')
+                save_array_as_image(seg_mask, 'results/segmentation/mask_bgs.jpg' )
+                save_array_as_image(seg_mask2, 'results/segmentation/mask2_bgs.jpg' )
+
             
-                st.image([seg_image, seg_mask], width=200)
+                st.image([seg_image, seg_mask, seg_mask2], width=300, caption=["Segmented image", "1st  possible BGS mask", "2nd  possible BGS mask"])
         else:
             st.warning('No bounding box drawn. Please draw a bounding box to proceed.')
+
+
+
+
 

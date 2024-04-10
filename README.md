@@ -10,7 +10,6 @@ which includes segmentation and further volumetric calculations.
 
 ```bash
 $ git clone https://github.com/yoghurtina/stroke-analyst.git
-$ cd stroke-analyst
 ```
 # Environment Setup
 

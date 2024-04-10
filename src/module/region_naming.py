@@ -44,7 +44,7 @@ import matplotlib.pyplot as plt
 def extract_allen_mask(index):
     size = [528, 320, 456]
     # VOL = 3-D matrix (volume) of atlas Nissl
-    with open('/home/ioanna/Documents/Thesis/raw_data/annotation.raw', 'rb') as file:
+    with open('raw_data/annotation.raw', 'rb') as file:
         ANO = np.fromfile(file, dtype=np.uint32, count=np.prod(size))
 
     ANO = np.reshape(ANO, size)
@@ -181,40 +181,4 @@ def calculate_region_iou(ground_truth_regions, predicted_regions):
     
     iou = intersection / union
     return iou
-
-# # Load JSON data from file and convert to dictionary
-# with open('/home/ioanna/Documents/Thesis/raw_data/acronyms.json') as file:
-#     json_data = json.load(file)
-#     # json_data = {item['id']: item for item in json_data}
-# print(json_data)
-
-# predicted_lesion = Image.open('/home/ioanna/Documents/Thesis/results/validation/volumetry/stroke/computed_masks/17stroke.jpg')
-# gt_lesion = Image.open('/home/ioanna/Documents/Thesis/results/validation/volumetry/stroke/ground_truth_masks/mask_se_17.jpg')
-
-# ground_truth_regions = region_naming(json_data,2.22e-3, predicted_lesion, "/home/ioanna/Documents/Thesis/src/module")
-# print(ground_truth_regions)
-# predicted_regions = region_naming(json_data,2.22e-3, gt_lesion, "/home/ioanna/Documents/Thesis/src/module")
-# print(predicted_regions)
-# iou = calculate_region_iou(ground_truth_regions, predicted_regions)
-# print("IoU:", iou)
-
-# # 0.43 1.82
-# # 0.32 0.30
-# # 0.22 0.48
-# # -0.18 0.39
-# # -1.58 0.65
-# # 1.92 0.38
-# # -0.18 0.47
-# # -1.38 0.62
-# # -0.38 0.46
-# # -0.48 0.43
-# # 2.22 0.69
-
-
-
-# # lesion_AS = Image.open('/src/module/mask3_hem1.jpg')
-# # allen_masks = "/raw_data/allen_masks/-2.7.csv"
-# # 
-# # result = region_naming(json_data, allen_masks,-2.68e-3, lesion_AS, "/home/ioanna/Documents/Thesis/src/module")
-# # print(result)
 

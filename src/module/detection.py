@@ -3,8 +3,10 @@ from segment_anything import sam_model_registry, SamPredictor
 import supervision as sv
 import numpy as np
 import base64
-from PIL import Image
+from PIL import Image, ImageDraw, ImageChops
 from scipy.ndimage import gaussian_filter
+import torch
+from transformers import SamModel, SamProcessor, SamConfig
 
 def encode_image(filepath):
     with open(filepath, 'rb') as f:
@@ -14,11 +16,14 @@ def encode_image(filepath):
     return encoded
 
 def seg_anything(image, bbox):
-    CHECKPOINT_PATH = "src/sam_weights/sam_vit_b_01ec64.pth"
-    # DEVICE = torch.device('cpu')
+
+
+
+    CHECKPOINT_PATH = "src/sam_weights/meta_base.pth"
+    DEVICE = 'cpu'
     MODEL_TYPE = "vit_b"
     sam = sam_model_registry[MODEL_TYPE](checkpoint=CHECKPOINT_PATH)
-    # sam.to(device=DEVICE)
+    sam.to(device=DEVICE)
     # CHECKPOINT_PATH = "src/sam_weights/stroke_huge.pth"
 
     mask_predictor = SamPredictor(sam)
@@ -58,14 +63,14 @@ def seg_anything(image, bbox):
             box=box,
             multimask_output=True
         )
-        box_annotator = sv.BoxAnnotator(color=sv.Color.red())
+        box_annotator = sv.BoundingBoxAnnotator(color_lookup = sv.ColorLookup.INDEX)
         mask_annotator = sv.MaskAnnotator(color_lookup = sv.ColorLookup.INDEX) # INDEX # CLASS #TRACK
         
         masks_hem2, scores2, logits2 = mask_predictor.predict(
             box=box2,
             multimask_output=True
         )
-        box_annotator2 = sv.BoxAnnotator(color=sv.Color.red())
+        box_annotator2 = sv.BoundingBoxAnnotator(color_lookup = sv.ColorLookup.INDEX)
         mask_annotator2 = sv.MaskAnnotator(color_lookup = sv.ColorLookup.INDEX) # INDEX # CLASS #TRACK
 
         detections = sv.Detections(
@@ -80,9 +85,9 @@ def seg_anything(image, bbox):
         )
         detections2 = detections2[detections2.area == np.max(detections2.area)]
 
-        source_image_hem1 = box_annotator.annotate(scene=image_bgr.copy(), detections=detections, skip_label=True)
+        source_image_hem1 = box_annotator.annotate(scene=image_bgr.copy(), detections=detections)
         segmented_image_hem1 = mask_annotator.annotate(scene=image_bgr.copy(), detections=detections)
-        source_image_hem2 = box_annotator2.annotate(scene=image_bgr.copy(), detections=detections2, skip_label=True)
+        source_image_hem2 = box_annotator2.annotate(scene=image_bgr.copy(), detections=detections2)
         segmented_image_hem2 = mask_annotator2.annotate(scene=image_bgr.copy(), detections=detections2)
 
         # sv.plot_images_grid(
@@ -142,8 +147,74 @@ def seg_anything(image, bbox):
 
     return True
 
+
+# def seg_anything_bgs(image_path, bbox):
+#     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+#     CHECKPOINT_PATH = "src/sam_weights/bgs_base_cpu.pth"
+
+#     # Assuming the model configuration and processor are compatible with your fine-tuned model
+#     model_config = SamConfig.from_pretrained("facebook/sam-vit-base")
+#     processor = SamProcessor.from_pretrained("facebook/sam-vit-base")
+
+#     # Create an instance of the model architecture with the loaded configuration
+#     my_model = SamModel(config=model_config)
+
+#     # Load the model weights and ensure the model is on the correct device
+#     my_model.load_state_dict(torch.load("src/sam_weights/bgs_base_cpu.pth", map_location=device))
+#     my_model = my_model.to(device)
+
+#     # Process the image and bounding box
+#     image = Image.open(image_path).convert("RGB")
+#     bbox_list = [[[
+#         float(bbox['x']),
+#         float(bbox['y']),
+#         float(bbox['x'] + bbox['width']),
+#         float(bbox['y'] + bbox['height'])
+#     ]]]  
+
+#     # Process the image with the bounding box
+#     inputs = processor(images=image, input_boxes=bbox_list, return_tensors="pt").to(device)  
+
+#     with torch.no_grad():
+#         outputs = my_model(**inputs, multimask_output=False)
+
+#     medsam_seg_prob = torch.sigmoid(outputs.pred_masks.squeeze(1))
+#     # convert soft mask to hard mask
+#     medsam_seg_prob = medsam_seg_prob.cpu().numpy().squeeze()
+#     medsam_seg = (medsam_seg_prob == 1.0).astype(np.uint8)
+
+#     # fore thresholding, check the distribution of predicted probabilities
+#     print("Max probability:", medsam_seg_prob.max())
+#     print("Min probability:", medsam_seg_prob.min())
+#     print("Mean probability:", medsam_seg_prob.mean())
+
+#     mask_pil = Image.fromarray((medsam_seg * 255).astype(np.uint8))
+#     mask_path = f"results/segmentation/mask_bgs.jpg"
+#     mask_pil.save(mask_path)
+#     mask_pil = mask_pil.convert("L")
+#     mask_pil = mask_pil.resize(image.size, Image.Resampling.LANCZOS)
+
+#     # Overlay mask onto the original image to create the segmented image
+#     segmented = Image.new("RGBA", image.size, (0, 0, 0, 0))   
+#     image_rgba = image.convert("RGBA") 
+#     segmented.paste(image, (0, 0), mask_pil)
+#     seg_image_path = f"results/segmentation/segmented_image.png"
+#     segmented.save(seg_image_path)
+
+#     # Save the original image as well
+#     source_image_path = f"results/segmentation/source_image.jpg"
+#     image.save(source_image_path)
+
+#     # Draw the bounding box on the original image and save it
+#     draw = ImageDraw.Draw(image)
+#     draw.rectangle([(bbox['x'], bbox['y']), (bbox['x'] + bbox['width'], bbox['y'] + bbox['height'])], outline="red", width=3)
+#     image_with_box_path = f"results/segmentation/image_with_box.jpg"
+#     image.save(image_with_box_path)
+#     return True
+
+
 def seg_anything_bgs(image, bbox):
-    CHECKPOINT_PATH = "src/sam_weights/sam_vit_b_01ec64.pth"
+    CHECKPOINT_PATH = "src/sam_weights/meta_base.pth"
     # DEVICE = torch.device('cpu')
     MODEL_TYPE = "vit_b"
     sam = sam_model_registry[MODEL_TYPE](checkpoint=CHECKPOINT_PATH)
@@ -185,7 +256,7 @@ def seg_anything_bgs(image, bbox):
             box=box,
             multimask_output=True
         )
-        box_annotator = sv.BoxAnnotator(color=sv.Color.red())
+        box_annotator = sv.BoundingBoxAnnotator(color_lookup = sv.ColorLookup.INDEX)
         mask_annotator = sv.MaskAnnotator(color_lookup = sv.ColorLookup.INDEX) # INDEX # CLASS #TRACK      
 
         detections = sv.Detections(
@@ -194,7 +265,7 @@ def seg_anything_bgs(image, bbox):
         )
         detections = detections[detections.area == np.max(detections.area)]
 
-        source_image_hem1 = box_annotator.annotate(scene=image_bgr.copy(), detections=detections, skip_label=True)
+        source_image_hem1 = box_annotator.annotate(scene=image_bgr.copy(), detections=detections)
         segmented_image_hem1 = mask_annotator.annotate(scene=image_bgr.copy(), detections=detections)
 
     source_image_array = Image.fromarray(source_image_hem1)

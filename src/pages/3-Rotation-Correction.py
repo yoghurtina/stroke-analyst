@@ -31,7 +31,7 @@ def main():
         segmented_image = Image.open(segmented_image_path)
         mask = Image.open(mask_path)
 
-        segmented_image = get_segmented("results/segmentation/source_image.jpg", "results/segmentation/mask2_bgs.jpg")
+        segmented_image = get_segmented("results/segmentation/source_image.jpg", "results/segmentation/mask_bgs.jpg")
         segmented_pil_image  =Image.fromarray(segmented_image)
         segmented_pil_image.save("results/segmentation/segmented_image.jpg")
 

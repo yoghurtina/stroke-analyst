@@ -6,7 +6,7 @@ import numpy as np
 from matplotlib.patches import Polygon
 from module.utils import post_process_mask, smooth_mask, save_array_as_image, create_superpixel_image
 from module.detection import seg_anything
-from module.utils import equalize_this
+from module.utils import equalize_this, resize_image_aspect_ratio, translate_bbox_to_original
 from module.alignment import alignment, is_aligned
 
 
@@ -30,53 +30,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-def resize_image_aspect_ratio(image_path, output_path, max_size=400):
-    # Open the original image
-    image = Image.open(image_path)
-    original_width, original_height = image.size
-    
-    # Calculate the scaling factor
-    scaling_factor = max_size / max(original_width, original_height)
-    
-    # Calculate the new dimensions
-    new_width = int(original_width * scaling_factor)
-    new_height = int(original_height * scaling_factor)
-    
-    # Resize the image
-    resized_image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-    
-    # Save the resized image
-    resized_image.save(output_path)
-
-    print(f"Image has been resized to {new_width}x{new_height} and saved successfully!")
-    
-    # Return the resized image and the scaling factors
-    return resized_image, scaling_factor# Example usage
-
-def translate_bbox_to_original(bbox_resized, scaling_factor):
-    """
-    Translate bounding box coordinates from the resized dimensions back to the original image dimensions.
-
-    Parameters:
-    - bbox_resized: The bounding box in the resized image, as a dictionary with keys 'x', 'y', 'width', 'height'.
-    - scaling_factor: The scaling factor used to resize the image.
-
-    Returns:
-    - A dictionary containing the bounding box coordinates translated back to the original image dimensions.
-    """
-    
-    # Translate the bounding box coordinates
-    bbox_original = {
-        'x': bbox_resized['x'] / scaling_factor,
-        'y': bbox_resized['y'] / scaling_factor,
-        'width': bbox_resized['width'] / scaling_factor,
-        'height': bbox_resized['height'] / scaling_factor
-    }
-    
-    return bbox_original
-
 
 col1, divider, col2 = st.columns([3, 0.1, 7 ])
 
@@ -141,8 +94,9 @@ with col2:
             drawing_mode=drawing_mode,
             key="canvas",
         )
-        if canvas_result.image_data is not None:
-            st.image(canvas_result.image_data)
+        # if canvas_result.image_data is not None:
+        #     st.image(canvas_result.image_data)
+        process_button = st.button("Process Image")
 
         objects = canvas_result.json_data['objects']
         bbox_array = np.array([[obj['left'], obj['top'], obj['width'], obj['height']] for obj in objects])
@@ -153,32 +107,32 @@ with col2:
             bbox_coords = translate_bbox_to_original(bbox_coords, scaling_factor)
 
             # seg_results = seg_anything("src/temp/registration/non_rigid_rot.jpg", bbox_coords)
+            if process_button:
+                seg_results = seg_anything("results/alignment/equalized_aligned_section.jpg", bbox_coords)
 
-            seg_results = seg_anything("results/alignment/equalized_aligned_section.jpg", bbox_coords)
+                if seg_results:
+                    image_hem1 = Image.open('results/detection/source_image_hem1.jpg')
+                    seg_hem1 = Image.open('results/detection/segmented_image_hem1.jpg')
+                    
+                    mask1_hem1 = post_process_mask('results/detection/mask1_hem1.jpg')
+                    mask2_hem1 = post_process_mask('results/detection/mask2_hem1.jpg')
+                    mask3_hem1 = post_process_mask("results/detection/mask3_hem1.jpg")
+                    save_array_as_image(mask1_hem1, 'results/detection/mask1_hem1.jpg' )
+                    save_array_as_image(mask2_hem1, 'results/detection/mask2_hem1.jpg' )
+                    save_array_as_image(mask3_hem1, 'results/detection/mask3_hem1.jpg' )
 
-            if seg_results:
-                image_hem1 = Image.open('results/detection/source_image_hem1.jpg')
-                seg_hem1 = Image.open('results/detection/segmented_image_hem1.jpg')
-                
-                mask1_hem1 = post_process_mask('results/detection/mask1_hem1.jpg')
-                mask2_hem1 = post_process_mask('results/detection/mask2_hem1.jpg')
-                mask3_hem1 = post_process_mask("results/detection/mask3_hem1.jpg")
-                save_array_as_image(mask1_hem1, 'results/detection/mask1_hem1.jpg' )
-                save_array_as_image(mask2_hem1, 'results/detection/mask2_hem1.jpg' )
-                save_array_as_image(mask3_hem1, 'results/detection/mask3_hem1.jpg' )
+                    st.image([image_hem1, seg_hem1], width=300, caption=["Hemisphere 1", "Segmented Image - Hemisphere 1"])
+                    st.image([mask2_hem1, mask3_hem1], width=300, caption=["1st  possible stroke mask", "2nd  possible stroke mask"])
 
-                st.image([image_hem1, seg_hem1], width=300, caption=["Hemisphere 1", "Segmented Image - Hemisphere 1"])
-                st.image([mask2_hem1, mask3_hem1], width=300, caption=["1st  possible stroke mask", "2nd  possible stroke mask"])
+                    image_hem2 = Image.open('results/detection/source_image_hem2.jpg')
+                    seg_hem2 = Image.open('results/detection/segmented_image_hem2.jpg')
+                    
+                    mask1_hem2 = post_process_mask('results/detection/mask1_hem2.jpg')
+                    save_array_as_image(mask1_hem2, 'results/detection/mask1_hem2.jpg' )
 
-                image_hem2 = Image.open('results/detection/source_image_hem2.jpg')
-                seg_hem2 = Image.open('results/detection/segmented_image_hem2.jpg')
-                
-                mask1_hem2 = post_process_mask('results/detection/mask1_hem2.jpg')
-                save_array_as_image(mask1_hem2, 'results/detection/mask1_hem2.jpg' )
-
-                st.image([image_hem2, seg_hem2], width=300, caption=["Hemisphere 2", "Segmented Image - Hemisphere 2"])
-        
-                # delete_foldercontents("results")
+                    st.image([image_hem2, seg_hem2], width=300, caption=["Hemisphere 2", "Segmented Image - Hemisphere 2"])
+            
+                    # delete_foldercontents("results")
         else:
             st.warning('No bounding box drawn. Please draw a bounding box to proceed.')
             

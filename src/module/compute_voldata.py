@@ -26,9 +26,6 @@ def compute_volumetric_data(whole_mask, lesion_mask, left_hem_mask, right_hem_ma
     y = [i for i, val in enumerate(right_hem_array.flatten()) if val != 0]
     rh_area = len(y) * pix_area
 
-    # variable = ['whole_mask_area','lesion_area', 'left_hem_area', 'right_hem_area']
-    # value = [ mask_area, lesion_area, lh_area, rh_area]
-
     variable = ['lesion_area', 'ischemic_hem_area', 'healthy_hem_area']
     value = [ lesion_area, lh_area, rh_area]
 

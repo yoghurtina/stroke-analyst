@@ -7,7 +7,6 @@ from module.utils import segmentation_old
 def is_aligned(image, threshold=5):
     lines = cv2.HoughLinesP(image, rho=1, theta=np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
     if lines is not None:
-        # Compute the average angle of the detected lines
         angles = [np.arctan2(y2-y1, x2-x1) for x1,y1,x2,y2 in lines[:,0]]
         theta_hough = np.degrees(np.mean(angles))
 
@@ -19,13 +18,10 @@ def is_aligned(image, threshold=5):
 def alignment(image, mask):
     if is_aligned(mask):
         return image
-
-    # Apply Hough Transform to detect lines in the image
     lines = cv2.HoughLinesP(mask, rho=1, theta=np.pi/180, threshold=100, minLineLength=100, maxLineGap=10)
 
     theta_hough = 0
     if lines is not None:
-        #  average angle of the detected lines
         angles = [np.arctan2(y2-y1, x2-x1) for x1,y1,x2,y2 in lines[:,0]]
         theta_hough = np.degrees(np.mean(angles))
 
@@ -46,7 +42,6 @@ def alignment(image, mask):
         eigenvector_matrix = np.column_stack((eigenvectors[:, -1], eigenvectors[:, -2], eigenvectors[:, -3]))
     else:
         eigenvector_matrix = np.column_stack((eigenvectors[:, -1], eigenvectors[:, -2]))
-
     theta_eigen = np.degrees(np.arctan2(*eigenvectors[::-1, 0]))
 
     if abs(theta_hough - theta_eigen) < 30:
@@ -54,7 +49,6 @@ def alignment(image, mask):
     else:
         theta = theta_eigen
 
-    # Rotate the image
     (rows, cols) = image.shape[:2]
     center = (cols // 2, rows // 2)
     M = cv2.getRotationMatrix2D(center, theta, 1.0)
@@ -64,7 +58,6 @@ def alignment(image, mask):
     new_cols = int(rows * sin + cols * cos)
     new_rows = int(rows * cos + cols * sin)
 
-    # Adjust the translation component of the transformation matrix to center the image
     M[0, 2] += (new_cols - cols) / 2
     M[1, 2] += (new_rows - rows) / 2
 

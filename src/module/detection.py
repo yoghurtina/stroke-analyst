@@ -265,14 +265,11 @@ def seg_anything_bgs(image, bbox):
         )
         detections = detections[detections.area == np.max(detections.area)]
 
-        source_image_hem1 = box_annotator.annotate(scene=image_bgr.copy(), detections=detections)
-        segmented_image_hem1 = mask_annotator.annotate(scene=image_bgr.copy(), detections=detections)
+        source_image_annotated = box_annotator.annotate(scene=image_bgr.copy(), detections=detections)
+        segmented_image_annotated = mask_annotator.annotate(scene=image_bgr.copy(), detections=detections)
 
-    source_image_array = Image.fromarray(source_image_hem1)
-    source_image_array.save("results/segmentation/source_image.jpg")
-
-    seg_image_array = Image.fromarray(segmented_image_hem1)
-    seg_image_array.save("results/segmentation/segmented_image.jpg")
+    Image.fromarray(source_image_annotated).save("results/segmentation/source_image.jpg")
+    Image.fromarray(segmented_image_annotated).save("results/segmentation/segmented_image.jpg")
     
     mask_array = Image.fromarray(masks_bgs[0])
     mask_array.save("results/segmentation/mask_bgs.jpg")

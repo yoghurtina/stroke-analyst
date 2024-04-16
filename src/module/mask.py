@@ -20,8 +20,6 @@ def find_mask(image):
     image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
 
     sam_result = mask_generator.generate(image_rgb)
-    
-    # print(sam_result[0].keys())
 
     mask_annotator = sv.MaskAnnotator()
 

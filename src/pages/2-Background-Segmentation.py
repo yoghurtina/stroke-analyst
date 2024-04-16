@@ -7,77 +7,12 @@ from matplotlib.patches import Polygon
 from module.detection import seg_anything_bgs
 from module.utils import equalize_this
 import os, shutil
-from module.utils import post_process_mask, smooth_mask, save_array_as_image, create_superpixel_image
+from module.utils import post_process_mask, smooth_mask, save_array_as_image, create_superpixel_image, create_binary_mask
 import cv2
-
-def save_uploadedfile(uploadedfile, path):
-    with open(os.path.join(path),"wb") as f:
-        f.write(uploadedfile.getbuffer())
-    return st.success("Saved uploaded image to a temporary folder")
-
-def delete_foldercontents(folder_path):
-    for filename in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-        except Exception as e:
-            print('Failed to delete %s. Reason: %s' % (file_path, e))
-
-
-from PIL import Image
-
-def resize_image_aspect_ratio(image_path, output_path, max_size=400):
-    # Open the original image
-    image = Image.open(image_path)
-    original_width, original_height = image.size
-    
-    # Calculate the scaling factor
-    scaling_factor = max_size / max(original_width, original_height)
-    
-    # Calculate the new dimensions
-    new_width = int(original_width * scaling_factor)
-    new_height = int(original_height * scaling_factor)
-    
-    # Resize the image
-    resized_image = image.resize((new_width, new_height), Image.Resampling.LANCZOS)
-    
-    # Save the resized image
-    resized_image.save(output_path)
-
-    print(f"Image has been resized to {new_width}x{new_height} and saved successfully!")
-    
-    # Return the resized image and the scaling factors
-    return resized_image, scaling_factor# Example usage
-
-def translate_bbox_to_original(bbox_resized, scaling_factor):
-    """
-    Translate bounding box coordinates from the resized dimensions back to the original image dimensions.
-
-    Parameters:
-    - bbox_resized: The bounding box in the resized image, as a dictionary with keys 'x', 'y', 'width', 'height'.
-    - scaling_factor: The scaling factor used to resize the image.
-
-    Returns:
-    - A dictionary containing the bounding box coordinates translated back to the original image dimensions.
-    """
-    
-    # Translate the bounding box coordinates
-    bbox_original = {
-        'x': bbox_resized['x'] / scaling_factor,
-        'y': bbox_resized['y'] / scaling_factor,
-        'width': bbox_resized['width'] / scaling_factor,
-        'height': bbox_resized['height'] / scaling_factor
-    }
-    
-    return bbox_original
-
-
+from module.utils import get_segmented, translate_bbox_to_original, resize_image_aspect_ratio, create_mask_from_path, split_image, get_segmented_hemispheres
 
 ################################################################################################################################################
-st.header("Background Segmentation")
+st.header("Background Segmentation and Midline Definition")
 
 st.markdown(
     """
@@ -98,29 +33,41 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+if 'seg_image' not in st.session_state:
+    st.session_state['seg_image'] = None
+
+if 'bbox' not in st.session_state:
+    st.session_state['bbox'] = None
+
+if 'path' not in st.session_state:
+    st.session_state['path'] = None
 
 col1, divider, col2 = st.columns([3, 0.1, 7 ])
 
-with col1:
-    instruction_image_path = "raw_data/instructions.png"  # Replace with the path to your instruction image
-    instruction_image = Image.open(instruction_image_path)
-    st.write('Example usage. Follow the instructions!')
+# with col1:
+#     instruction_image_path = "raw_data/instructions.png"  # Replace with the path to your instruction image
+#     instruction_image = Image.open(instruction_image_path)
+#     st.write('Example usage. Follow the instructions!')
 
-    st.image(instruction_image) 
+    # st.image(instruction_image) 
 
 with divider:
     # This creates a thin, tall column that acts as a divider
     st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
     st.markdown('<div class="vertical-line"></div>', unsafe_allow_html=True)
 
+
 with col2:
-    st.write('Draw bounding box in the following image.')
-
+    st.write('Draw bounding box as close as possible to the section. Draw the middle line of the section. Once ready, press Process button.')
     resized_image, scaling_factor = resize_image_aspect_ratio('results/mapping/uploaded_section.jpg', 'results/mapping/uploaded_section1.jpg')
-    uploaded_in_previous_step = Image.open("results/mapping/uploaded_section1.jpg")
-
+    uploaded_section = Image.open("results/mapping/uploaded_section1.jpg")
+    uploaded_array = np.array(uploaded_section)
     
-    uploaded_array = np.array(uploaded_in_previous_step)
+
+    drawing_mode = st.sidebar.radio("Choose drawing mode:", ("Bounding Box", "Free Draw"))
+    stroke_width = st.sidebar.slider("Stroke width:", 1, 25, 3)
+    stroke_color = st.sidebar.color_picker("Stroke color:")
+    bg_color = st.sidebar.color_picker("Background color:", "#eee")
 
     img_height, img_width, _=    uploaded_array.shape
     max_canvas_width = 400
@@ -130,62 +77,62 @@ with col2:
     scaled_width = int(img_width * scale_factor)
     scaled_height = int(img_height * scale_factor)
 
-    drawing_mode = st.sidebar.selectbox(
-        "Drawing tool:", ("rect", "circle", "transform", "polygon")
+    canvas_result = st_canvas(
+        fill_color="rgba(255, 165, 0, 0.3)",
+        stroke_width=stroke_width,
+        stroke_color=stroke_color,
+        background_color=bg_color,
+        background_image=uploaded_section.resize((scaled_width, scaled_height)),
+        update_streamlit=True,
+        height=scaled_height, 
+        width=scaled_width,  
+        drawing_mode="freedraw" if drawing_mode == "Free Draw" else "rect",
+        key="canvas"
     )
+    process_button = st.button("Process Image")
+    if process_button:
+        if canvas_result.json_data is not None:
+            objects = canvas_result.json_data['objects']
+            for obj in objects:
+                if obj['type'] == 'rect':
+                    bbox_resized = {'x': obj['left'], 'y': obj['top'], 'width': obj['width'], 'height': obj['height']}
+                    st.session_state['bbox'] = translate_bbox_to_original(bbox_resized, scaling_factor)
+                elif obj['type'] == 'path':
+                    st.session_state['path'] = [segment for segment in obj['path']]
 
-    stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
-    if drawing_mode == 'point':
-        point_display_radius = st.sidebar.slider("Point display radius: ", 1, 25, 3)
-    stroke_color = st.sidebar.color_picker("Stroke color hex: ")
-    bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
+            if st.session_state['bbox']:
+                seg_results = seg_anything_bgs("results/mapping/uploaded_section.jpg", st.session_state['bbox'])
+                if seg_results:
+                    st.session_state['seg_image'] = Image.open('results/segmentation/segmented_image.jpg')
 
-    realtime_update = st.sidebar.checkbox("Update in realtime", True)
-    if uploaded_in_previous_step:
-        canvas_result = st_canvas(
-            fill_color="rgba(255, 165, 0, 0.3)", 
-            stroke_width=stroke_width, 
-            stroke_color=stroke_color,
-            background_color=bg_color,
-            background_image=uploaded_in_previous_step.resize((scaled_width, scaled_height)),
-            update_streamlit=True,
-            height=scaled_height,
-            width=scaled_width,
-            drawing_mode=drawing_mode,  
-            key="canvas",
-        )
+                    seg_image = Image.open('results/segmentation/segmented_image.jpg')
+                    seg_mask = Image.open('results/segmentation/mask_bgs.jpg')
+                    # seg_mask2 = Image.open('results/segmentation/mask2_bgs.jpg')
 
-        if canvas_result.image_data is not None:
-            st.image(canvas_result.image_data, use_column_width=True)
+                    seg_mask = post_process_mask('results/segmentation/mask_bgs.jpg')
+                    # seg_mask2 = post_process_mask('results/segmentation/mask2_bgs.jpg')
+                    save_array_as_image(seg_mask, 'results/segmentation/mask_bgs.jpg')
+                    # save_array_as_image(seg_mask2, 'results/segmentation/mask2_bgs.jpg')
 
-        objects = canvas_result.json_data['objects']
-        bbox_array = np.array([[obj['left'], obj['top'], obj['width'], obj['height']] for obj in objects])
+                    st.image([seg_image, seg_mask], width=300, caption=["Segmented image", "1st possible BGS mask"])
 
+            if st.session_state['seg_image'] is not None and st.session_state['path']:
+                segmented_image = get_segmented_hemispheres('results/segmentation/segmented_image.jpg', 'results/segmentation/mask_bgs.jpg')
 
-        if len(bbox_array) > 0:   
-            bbox_coords = {'x': bbox_array[0][0], 'y': bbox_array[0][1], 'width': bbox_array[0][2], 'height': bbox_array[0][3]}
-            print(bbox_coords)
-            bbox_coords = translate_bbox_to_original(bbox_coords, scaling_factor)
-            seg_results = seg_anything_bgs("results/mapping/uploaded_section.jpg", bbox_coords)
+                seg_image_array = np.array(segmented_image)  # Convert PIL Image to numpy array
+                mask = create_mask_from_path(st.session_state['path'], segmented_image.shape, scaling_factor)
+                left_part, right_part = split_image(seg_image_array, mask)
+                left_part_image = Image.fromarray(left_part)
+                right_part_image = Image.fromarray(right_part)
 
-            if seg_results:
-                seg_image = Image.open('results/segmentation/segmented_image.jpg')
-                seg_mask = Image.open('results/segmentation/mask_bgs.jpg')
-                seg_mask2 = Image.open('results/segmentation/mask2_bgs.jpg')
+                left_part_image.save('results/segmentation/left_part.jpg')
+                right_part_image.save('results/segmentation/right_part.jpg')
+                create_binary_mask('results/segmentation/left_part.jpg', 'results/segmentation/mask_left_part.jpg' )
+                create_binary_mask('results/segmentation/right_part.jpg', 'results/segmentation/mask_right_part.jpg')
+                st.image(left_part_image, caption="Left Part of Image")
+                st.image(right_part_image, caption="Right Part of Image")
 
 
-                
-                seg_mask = post_process_mask('results/segmentation/mask_bgs.jpg')
-                seg_mask2 = post_process_mask('results/segmentation/mask2_bgs.jpg')
-                save_array_as_image(seg_mask, 'results/segmentation/mask_bgs.jpg' )
-                save_array_as_image(seg_mask2, 'results/segmentation/mask2_bgs.jpg' )
-
-            
-                st.image([seg_image, seg_mask, seg_mask2], width=300, caption=["Segmented image", "1st  possible BGS mask", "2nd  possible BGS mask"])
         else:
-            st.warning('No bounding box drawn. Please draw a bounding box to proceed.')
-
-
-
-
+            st.warning("Please draw a bounding box and the section's middle line before processing.")
 

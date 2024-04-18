@@ -3,30 +3,11 @@ from PIL import Image
 import io
 import numpy as np
 import os
+from module.utils import read_photos_from_folder
+from streamlit_extras.switch_page_button import switch_page
 
-st.header("Mapping Section to Atlas")
+st.header("Mapping of uploaded section to the Allen Brain Atlas")
 
-def rotate_image(image, degrees):
-    """
-    Rotates the image by the specified number of degrees
-    """
-    file_bytes = io.BytesIO(image.read())
-    image = Image.open(file_bytes)
-
-    rotated_image = image.rotate(degrees)
-    return rotated_image
-
-def read_photos_from_folder(folder_path):
-    """Reads all photos from a local folder."""
-    photos = []
-    contents = os.listdir(folder_path)
-    # Sort the contents alphabetically
-    contents.sort()
-    for file_name in contents:
-        if file_name.endswith(".jpg") or file_name.endswith(".jpeg") or file_name.endswith(".png"):
-            photo_path = os.path.join(folder_path, file_name)
-            photos.append(photo_path)
-    return photos
 
 st.markdown(
     """
@@ -55,6 +36,7 @@ if 'carousel_index' not in st.session_state:
 # col1, col2 = st.columns(2)
 col1, divider, col2 = st.columns([5, 0.1, 5])
 with col1:
+    st.subheader("Load section for analysis")
     uploaded_file = st.file_uploader("Upload a section using browse files or use drag and drop.", type=["jpg", "jpeg", "png"])
     if uploaded_file:
         image = st.image(uploaded_file, width=300)
@@ -67,6 +49,8 @@ with divider:
     st.markdown('<div class="vertical-line"></div>', unsafe_allow_html=True)
 
 with col2:
+    st.subheader("Map section to the Atlas")
+
     folder_path = 'raw_data/atlas1/'
     photos = read_photos_from_folder(folder_path)
 
@@ -114,3 +98,11 @@ with col2:
             st.success(f"Selected {os.path.basename(selected_image_path)} as the atlas section.")
     else:
         st.warning("No photos found in the specified folder.")
+
+
+col1, col2, col3 = st.columns([1,1,1])
+with col2: 
+    if st.button("Next"):
+        switch_page("background segmentation & middle-line definition")
+
+        # st.session_state['page'] = '2-Background segmentation & middle-line definition'  

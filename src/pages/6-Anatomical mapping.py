@@ -11,6 +11,7 @@ from io import BytesIO
 from module.region_naming import region_naming
 from module.compute_voldata import compute_volumetric_data
 import json
+from streamlit_extras.switch_page_button import switch_page
 
 st.header("Annatomical Region Annotation and Volumetric Data")
 

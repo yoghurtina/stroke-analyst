@@ -8,7 +8,7 @@ from module.utils import post_process_mask, smooth_mask, save_array_as_image, cr
 from module.detection import seg_anything
 from module.utils import equalize_this, resize_image_aspect_ratio, translate_bbox_to_original
 from module.alignment import alignment, is_aligned
-
+from streamlit_extras.switch_page_button import switch_page
 
 st.header("Stroke Lesion Segmentation")
 st.markdown(
@@ -30,8 +30,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-col1, divider, col2 = st.columns([3, 0.1, 7 ])
+col1, divider, col2 = st.columns([3, 0.1, 7])
 
 with col1:
     instruction_image_path = "raw_data/stroke_instructions.png"  # Replace with the path to your instruction image
@@ -56,7 +55,6 @@ with col2:
     # equalized_pil_image = Image.fromarray(equalized_array)
     # equalized_pil_image.save("src/temp/alignment/sp.jpg")
 
-
     uploaded_array = np.array(uploaded_in_previous_step)
 
     img_height, img_width=    uploaded_array.shape
@@ -66,12 +64,9 @@ with col2:
     scaled_width = int(img_width * scale_factor)
     scaled_height = int(img_height * scale_factor)
 
-
-
     drawing_mode = st.sidebar.selectbox(
         "Drawing tool:", ("rect", "circle", "transform", "polygon")
     )
-
     stroke_width = st.sidebar.slider("Stroke width: ", 1, 25, 3)
     if drawing_mode == 'point':
         point_display_radius = st.sidebar.slider("Point display radius: ", 1, 25, 3)
@@ -79,7 +74,6 @@ with col2:
     bg_color = st.sidebar.color_picker("Background color hex: ", "#eee")
 
     realtime_update = st.sidebar.checkbox("Update in realtime", True)
-
     # Open the uploaded image with PIL
     if uploaded_in_previous_step:
         # Draw the canvas
@@ -136,3 +130,7 @@ with col2:
         else:
             st.warning('No bounding box drawn. Please draw a bounding box to proceed.')
             
+col1, col2, col3 = st.columns([1,1,1])
+with col2: 
+    if st.button("Next"):
+        switch_page("anatomical mapping")

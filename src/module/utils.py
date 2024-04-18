@@ -236,7 +236,7 @@ def split_image(img, mask):
     right_part = cv2.bitwise_and(img, img, mask=cv2.bitwise_not(mask))
     return left_part, right_part
 
-def resize_image_aspect_ratio(image_path, output_path, max_size=400):
+def resize_image_aspect_ratio(image_path, output_path, max_size=300):
     image = Image.open(image_path)
     original_width, original_height = image.size
     
@@ -271,3 +271,32 @@ def translate_bbox_to_original(bbox_resized, scaling_factor):
         'height': bbox_resized['height'] / scaling_factor
     }
     return bbox_original
+
+def rotate_image(image, degrees):
+    """
+    Rotates the image by the specified number of degrees
+    """
+    rotated_image = image.rotate(degrees)
+    return rotated_image
+
+# def rotate_image(image, degrees):
+#     """
+#     Rotates the image by the specified number of degrees
+#     """
+#     file_bytes = io.BytesIO(image.read())
+#     image = Image.open(file_bytes)
+
+#     rotated_image = image.rotate(degrees)
+#     return rotated_image
+
+def read_photos_from_folder(folder_path):
+    """Reads all photos from a local folder."""
+    photos = []
+    contents = os.listdir(folder_path)
+    # Sort the contents alphabetically
+    contents.sort()
+    for file_name in contents:
+        if file_name.endswith(".jpg") or file_name.endswith(".jpeg") or file_name.endswith(".png"):
+            photo_path = os.path.join(folder_path, file_name)
+            photos.append(photo_path)
+    return photos

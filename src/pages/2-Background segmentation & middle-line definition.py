@@ -68,20 +68,18 @@ with col2:
     resized_image, scaling_factor = resize_image_aspect_ratio('results/mapping/uploaded_section.jpg', 'results/mapping/uploaded_section1.jpg')
     uploaded_section = Image.open("results/mapping/uploaded_section1.jpg")
     uploaded_array = np.array(uploaded_section)
-    
 
     drawing_mode = st.sidebar.radio("Choose drawing mode:", ("Bounding Box", "Free Draw"))
 
-    img_height, img_width, _=    uploaded_array.shape
+    img_height, img_width, _ = uploaded_array.shape
     max_canvas_width = 300
     max_canvas_height = 300
-    # Calculate scaled dimensions
     scale_factor = min(max_canvas_width / img_width, 1)  # Ensuring the scale factor is not more than 1
     scaled_width = int(img_width * scale_factor)
     scaled_height = int(img_height * scale_factor)
 
     canvas_result = st_canvas(
-        fill_color="rgba(255, 165, 0, 0.3)",
+        fill_color="rgba(255, 165, 0, 0.3)",  # Semi-transparent orange fill
         stroke_width=3,
         stroke_color="default",
         background_color="default",
@@ -93,6 +91,15 @@ with col2:
         key="canvas"
     )
     process_button = st.button("Process Image")
+    
+
+with divider2:
+    # This creates a thin, tall column that acts as a divider
+    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
+    st.markdown('<div class="vertical-line"></div>', unsafe_allow_html=True)
+
+with col3:
+    st.subheader("Results: segmented section + masks")
     if process_button:
         if canvas_result.json_data is not None:
             objects = canvas_result.json_data['objects']
@@ -102,46 +109,38 @@ with col2:
                     st.session_state['bbox'] = translate_bbox_to_original(bbox_resized, scaling_factor)
                 elif obj['type'] == 'path':
                     st.session_state['path'] = [segment for segment in obj['path']]
+
+            # Once bbox and path are updated, execute segmentation and other processing
+            if st.session_state['bbox']:
+                seg_results = seg_anything_bgs("results/mapping/uploaded_section.jpg", st.session_state['bbox'])
+                if seg_results:
+                    st.session_state['seg_image'] = Image.open('results/segmentation/segmented_image.jpg')
+
+                    seg_image = Image.open('results/segmentation/segmented_image.jpg')
+                    seg_mask = Image.open('results/segmentation/mask_bgs.jpg')
+
+                    seg_mask = post_process_mask('results/segmentation/mask_bgs.jpg')
+                    save_array_as_image(seg_mask, 'results/segmentation/mask_bgs.jpg')
+
+                    st.image([seg_image, seg_mask], width=300, caption=["Segmented section", "BGS mask"])
+
+            if st.session_state['seg_image'] is not None and st.session_state['path']:
+                segmented_image = get_segmented_hemispheres('results/segmentation/segmented_image.jpg', 'results/segmentation/mask_bgs.jpg')
+
+                seg_image_array = np.array(segmented_image)  # Convert PIL Image to numpy array
+                mask = create_mask_from_path(st.session_state['path'], segmented_image.shape, scaling_factor)
+                left_part, right_part = split_image(seg_image_array, mask)
+                left_part_image = Image.fromarray(left_part)
+                right_part_image = Image.fromarray(right_part)
+
+                left_part_image.save('results/segmentation/left_hemisphere.jpg')
+                right_part_image.save('results/segmentation/right_hemisphere.jpg')
+
+                # create_binary_mask('results/segmentation/left_hemisphere.jpg', 'results/segmentation/mask_left_hemisphere.jpg' )
+                # create_binary_mask('results/segmentation/right_hemisphere.jpg', 'results/segmentation/mask_right_hemisphere.jpg')
+                # st.image([left_part_image, right_part_image], width=300, caption=["Left Hemisphere", "Right Hemisphere"])
         else:
             st.warning("Please draw a bounding box and the section's middle line before processing.")
-
-with divider2:
-    # This creates a thin, tall column that acts as a divider
-    st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
-    st.markdown('<div class="vertical-line"></div>', unsafe_allow_html=True)
-
-with col3:
-    st.subheader("Results: segmented section + masks")
-    if st.session_state['bbox']:
-        seg_results = seg_anything_bgs("results/mapping/uploaded_section.jpg", st.session_state['bbox'])
-        if seg_results:
-            st.session_state['seg_image'] = Image.open('results/segmentation/segmented_image.jpg')
-
-            seg_image = Image.open('results/segmentation/segmented_image.jpg')
-            seg_mask = Image.open('results/segmentation/mask_bgs.jpg')
-            # seg_mask2 = Image.open('results/segmentation/mask2_bgs.jpg')
-
-            seg_mask = post_process_mask('results/segmentation/mask_bgs.jpg')
-            # seg_mask2 = post_process_mask('results/segmentation/mask2_bgs.jpg')
-            save_array_as_image(seg_mask, 'results/segmentation/mask_bgs.jpg')
-            # save_array_as_image(seg_mask2, 'results/segmentation/mask2_bgs.jpg')
-
-            st.image([seg_image, seg_mask], width=300, caption=["Segmented section", "BGS mask"])
-
-    if st.session_state['seg_image'] is not None and st.session_state['path']:
-        segmented_image = get_segmented_hemispheres('results/segmentation/segmented_image.jpg', 'results/segmentation/mask_bgs.jpg')
-
-        seg_image_array = np.array(segmented_image)  # Convert PIL Image to numpy array
-        mask = create_mask_from_path(st.session_state['path'], segmented_image.shape, scaling_factor)
-        left_part, right_part = split_image(seg_image_array, mask)
-        left_part_image = Image.fromarray(left_part)
-        right_part_image = Image.fromarray(right_part)
-
-        left_part_image.save('results/segmentation/left_part.jpg')
-        right_part_image.save('results/segmentation/right_part.jpg')
-        create_binary_mask('results/segmentation/left_part.jpg', 'results/segmentation/mask_left_part.jpg' )
-        create_binary_mask('results/segmentation/right_part.jpg', 'results/segmentation/mask_right_part.jpg')
-        st.image([left_part_image, right_part_image], width=300, caption=["Left Hemisphere", "Right Hemisphere"])
 
 
 col1, col2, col3 = st.columns([1,1,1])

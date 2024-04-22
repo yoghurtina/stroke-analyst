@@ -300,3 +300,11 @@ def read_photos_from_folder(folder_path):
             photo_path = os.path.join(folder_path, file_name)
             photos.append(photo_path)
     return photos
+
+def get_bounding_box(ground_truth_map):
+    y_indices, x_indices = np.where(ground_truth_map > 0)
+    x_min, x_max = np.min(x_indices), np.max(x_indices)
+    y_min, y_max = np.min(y_indices), np.max(y_indices)
+    H, W = ground_truth_map.shape
+    bbox = [x_min, y_min, x_max, y_max]
+    return bbox

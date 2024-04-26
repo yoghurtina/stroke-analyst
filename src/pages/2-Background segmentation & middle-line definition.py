@@ -46,12 +46,10 @@ if 'path' not in st.session_state:
 col1, divider, col2, divider2, col3 = st.columns([2, 0.1, 4, 0.1, 4])
 
 with col1:
-    st.subheader("Example usage. Follow the instructions")
+    st.subheader("Instructions")
 
     instruction_image_path = "raw_data/instructions.png"  # Replace with the path to your instruction image
     instruction_image = Image.open(instruction_image_path)
-    st.write('Example usage. Follow the instructions!')
-
     st.image(instruction_image) 
 
 with divider:
@@ -63,8 +61,11 @@ with divider:
 
 with col2:
     st.subheader("Segment background and define middle line")
-
-    st.write('Draw bounding box as close as possible to the section. Draw the middle line of the section. Once ready, press Process button.')
+    st.markdown("""
+        - Draw the bounding box
+        - Draw the middle line with free draw
+        - Once ready, click Process Image
+        """)
     resized_image, scaling_factor = resize_image_aspect_ratio('results/mapping/uploaded_section.jpg', 'results/mapping/uploaded_section1.jpg')
     uploaded_section = Image.open("results/mapping/uploaded_section1.jpg")
     uploaded_array = np.array(uploaded_section)

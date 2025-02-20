@@ -118,15 +118,15 @@ with col3:
                     st.session_state['seg_image'] = Image.open('results/segmentation/segmented_image.jpg')
 
                     seg_image = Image.open('results/segmentation/segmented_image.jpg')
-                    seg_mask = Image.open('results/segmentation/mask_bgs.jpg')
+                    seg_mask = Image.open('results/segmentation/mask_2_bgs.jpg')
 
-                    seg_mask = post_process_mask('results/segmentation/mask_bgs.jpg')
-                    save_array_as_image(seg_mask, 'results/segmentation/mask_bgs.jpg')
+                    seg_mask = post_process_mask('results/segmentation/mask_2_bgs.jpg')
+                    save_array_as_image(seg_mask, 'results/segmentation/mask_2_bgs.jpg')
 
                     st.image([seg_image, seg_mask], width=300, caption=["Segmented section", "BGS mask"])
 
             if st.session_state['seg_image'] is not None and st.session_state['path']:
-                segmented_image = get_segmented_hemispheres('results/segmentation/segmented_image.jpg', 'results/segmentation/mask_bgs.jpg')
+                segmented_image = get_segmented_hemispheres('results/segmentation/segmented_image.jpg', 'results/segmentation/mask_2_bgs.jpg')
 
                 seg_image_array = np.array(segmented_image)  # Convert PIL Image to numpy array
                 mask = create_mask_from_path(st.session_state['path'], segmented_image.shape, scaling_factor)

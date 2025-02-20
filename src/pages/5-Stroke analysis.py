@@ -10,7 +10,7 @@ from module.utils import equalize_this, resize_image_aspect_ratio, translate_bbo
 from module.alignment import alignment, is_aligned
 from streamlit_extras.switch_page_button import switch_page
 
-st.header("Stroke Lesion Segmentation")
+st.header("Lesion Segmentation")
 st.markdown(
     """
     <style>
@@ -154,6 +154,7 @@ with col2:
     # bbox_coords = translate_bbox_to_original(bbox_coords, scaling_factor)
 
     seg_results = seg_anything("results/alignment/equalized_aligned_section.jpg", bbox_coords)
+
     if seg_results:
         image_hem1 = Image.open('results/detection/source_image_hem1.jpg')
         seg_hem1 = Image.open('results/detection/segmented_image_hem1.jpg')
@@ -165,16 +166,11 @@ with col2:
         save_array_as_image(mask2_hem1, 'results/detection/mask2_hem1.jpg')
         save_array_as_image(mask3_hem1, 'results/detection/mask3_hem1.jpg')
 
-        # st.image([seg_hem1], width=300, caption=["Segmented Image - Hemisphere 1"])
-        st.image([mask2_hem1, mask3_hem1], width=300, caption=["1st possible stroke mask", "2nd possible stroke mask"])
+        st.image([mask1_hem1, mask2_hem1], width=300, caption=["1st possible stroke mask", "2nd possible stroke mask"])
 
-        # image_hem2 = Image.open('results/detection/source_image_hem2.jpg')
         seg_hem2 = Image.open('results/detection/segmented_image_hem2.jpg')
-        
         mask1_hem2 = post_process_mask('results/detection/mask1_hem2.jpg')
         save_array_as_image(mask1_hem2, 'results/detection/mask1_hem2.jpg')
-
-        # st.image([seg_hem2], width=300, caption=["Segmented Image - Hemisphere 2"])
 
         left_part_image = Image.open('results/alignment/aligned_left_hemisphere.jpg')
         right_part_image = Image.open('results/alignment/aligned_right_hemisphere.jpg')

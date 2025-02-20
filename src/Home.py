@@ -12,7 +12,6 @@ collections.MutableMapping = collections.abc.MutableMapping
 """
 # Stroke Analyst - Wiki
 __Under Construction__
-"""
 
 # """
 # # Steps to follow:

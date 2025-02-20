@@ -1,19 +1,11 @@
 import pandas as pd
 from PIL import Image
 import streamlit as st
-from streamlit_drawable_canvas import st_canvas
-import numpy as np
-from matplotlib.patches import Polygon
-from module.detection import seg_anything
-from module.utils import equalize_this
-import os, shutil
-from io import BytesIO
 from module.region_naming import region_naming
 from module.compute_voldata import compute_volumetric_data
 import json
-from streamlit_extras.switch_page_button import switch_page
 
-st.header("Annatomical Region Annotation and Volumetric Data")
+st.header("Anatomical region annotation and volumetric calculations")
 
 # Load JSON data from file and convert to dictionary
 with open('raw_data/acronyms.json') as file:
@@ -30,8 +22,8 @@ print(type(affected_regions))
 df = pd.DataFrame(affected_regions, columns=['Affected Regions'])
 st.write(df)
 
-vol_data = compute_volumetric_data("results/segmentation/mask_bgs.jpg","results/detection/mask3_hem1.jpg",\
-                         "results/detection/mask1_hem1.jpg", "results/detection/mask1_hem2.jpg", "results")
+vol_data = compute_volumetric_data("results/segmentation/mask_2_bgs.jpg","results/detection/mask1_hem1.jpg",\
+                         "results/alignment/mask_left_hemisphere.jpg", "results/alignment/mask_right_hemisphere.jpg", "results")
 
 st.write("Volumetric data computed!")
 

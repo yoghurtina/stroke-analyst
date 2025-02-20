@@ -65,9 +65,19 @@ def get_segmented(image_file, mask_file):
 
 def get_segmented_hemispheres(image_file, mask_file):
     image = cv2.imread(image_file)
-    mask = cv2.imread(mask_file , cv2.IMREAD_GRAYSCALE)  # Load mask in grayscale
+    mask = cv2.imread(mask_file, cv2.IMREAD_GRAYSCALE)  # Load in grayscale
+
+    if image is None or mask is None:
+        raise ValueError("Error loading images. Check file paths.")
 
     _, binary_mask = cv2.threshold(mask, 127, 255, cv2.THRESH_BINARY)
+    
+    binary_mask = binary_mask.astype(np.uint8)
+    image = image.astype(np.uint8)
+
+    if image.shape[:2] != binary_mask.shape:
+        raise ValueError(f"Size mismatch: image {image.shape[:2]}, mask {binary_mask.shape}")
+
     segmented_image = cv2.bitwise_and(image, image, mask=binary_mask)
     segmented_image = cv2.cvtColor(segmented_image, cv2.COLOR_BGR2RGB)
 

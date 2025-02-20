@@ -51,7 +51,7 @@ with divider:
 with col2:
     st.subheader("Map section to the Atlas")
 
-    folder_path = 'raw_data/atlas1/'
+    folder_path = 'raw_data/atlas/'
     photos = read_photos_from_folder(folder_path)
 
     if len(photos) > 0:

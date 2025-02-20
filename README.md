@@ -9,7 +9,7 @@ SA2 is designed for **stroke lesion analysis** on immunochemistry images, provid
 ```bash
 git clone https://github.com/yoghurtina/stroke-analyst.git
 ```
-## Environment Setup
+## Set Up the Environment
 Navigate to the project directory and create the required Conda environment:
 
 ```bash
@@ -20,7 +20,7 @@ $ cd stroke-analyst
 $ conda env create -f environment.yml
 ```
 
-## Running
+## Running the Application
 
 SA2 UI has been built using Streamlit. Start the application with the following command:
 
